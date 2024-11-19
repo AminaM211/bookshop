@@ -291,7 +291,7 @@ $conn->close();
                 </button>
         </div>
         <div class="tinynav">
-            <a class="hov user-icon" id="hidden" href="user.php"><img src="./images/user.svg" alt=""></a>
+            <a class="hov user-icon" id="hidden" href="account.php"><img src="./images/user.svg" alt=""></a>
             <a class="hov cart-icon" id="hidden" href="cart.php"><img src="./images/shopping-cart.svg" alt=""></a>
             <a href="logout.php" id="hidden" class="navbar__logout" >Hi <?php echo ucfirst($user['name']); ?>,<br> logout?</a>
         </div>
