@@ -1,0 +1,41 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #513b36; /* Lichte achtergrondkleur */
+    padding: 10px 40px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+    position: fixed; 
+    top: 0; 
+    width: 100%;
+    z-index: 1000; 
+}
+
+.logo img {
+    height: 50px; /* Hoogte van het logo */
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+}
+
+.login-link {
+    text-decoration: none;
+    color: #ffffff;
+    font-weight: 600; 
+    padding: 10px 15px; 
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.login-link:hover {
+    background-color: #ff7151;
+    color: #fff;
+    text-decoration: none;
+}
+
+.username {
+    font-weight: bold;
+    margin-left: 20px;
+}

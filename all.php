@@ -7,7 +7,6 @@ if($_SESSION['loggedin'] !== true){
 
 include 'inc.nav.php';
 
-
 $conn = new mysqli('localhost', 'root', '', 'bookstore');
 
 if ($conn->connect_error) {
@@ -25,12 +24,18 @@ $user = $userResult->fetch_assoc(); // Verkrijg de gebruiker
 // Genre selectie
 $genreFilter = isset($_GET['genre']) ? $_GET['genre'] : 'all';
 
-// alleen romance boeken
-$sql = "SELECT books.*, authors.first_name, authors.last_name 
-        FROM books 
-        LEFT JOIN authors ON books.author_id = authors.id 
-        WHERE category_id = (SELECT id FROM categories WHERE name = 'romance')
-        LIMIT 6";
+// Query boeken op basis van genre
+if ($genreFilter === 'all') {
+    $sql = "SELECT books.*, authors.first_name, authors.last_name 
+            FROM books 
+            LEFT JOIN authors ON books.author_id = authors.id
+            ORDER BY RAND()";
+} else {
+    $sql = "SELECT books.*, authors.first_name, authors.last_name 
+            FROM books 
+            LEFT JOIN authors ON books.author_id = authors.id 
+            WHERE category_id = (SELECT id FROM categories WHERE name = ?)";
+}
 
 $stmt = $conn->prepare($sql);
 
@@ -54,11 +59,10 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Online bookstore</title>
-    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="./css/all.css">
     <link rel="stylesheet" href="./css/inc.footer.css">
 </head>
 <body>
-
     <nav>
         <input type="checkbox" id="check">
         <label for="check" class="checkbtn">
@@ -72,35 +76,80 @@ $conn->close();
             <a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?>">Thriller</a>
         </div>
     </nav>
+    
 
-    <div id="categories" class="filters">
-            <a href="all.php?genre=all" class="filter-btn <?php echo ($genreFilter === 'all') ? 'active' : ''; ?>">All</a>
-            <a href="all.php?genre=fiction" class="filter-btn <?php echo ($genreFilter === 'fiction') ? 'active' : ''; ?>">Fiction</a>
-            <a href="all.php?genre=nonfiction" class="filter-btn <?php echo ($genreFilter === 'nonfiction') ? 'active' : ''; ?>">Non-Fiction</a>
-            <a href="all.php?genre=romance" class="filter-btn <?php echo ($genreFilter === 'romance') ? 'active' : ''; ?>">Romance</a>
-            <a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?>">Thriller</a>
+    <div id="categories">
+        <a href="all.php?genre=all" class="filter-btn <?php echo ($genreFilter === 'all') ? 'active' : ''; ?>">All</a>
+        <a href="all.php?genre=fiction" class="filter-btn <?php echo ($genreFilter === 'fiction') ? 'active' : ''; ?>">Fiction</a>
+        <a href="all.php?genre=nonfiction" class="filter-btn <?php echo ($genreFilter === 'nonfiction') ? 'active' : ''; ?>">Non-Fiction</a>
+        <a href="all.php?genre=romance" class="filter-btn <?php echo ($genreFilter === 'romance') ? 'active' : ''; ?>">Romance</a>
+        <a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?>">Thriller</a>
+    </div>
+
+<div class="product-container">
+<div class="filters">
+    <form method="GET" action="all.php">
+        <label class="filter-title">Subgenre:</label>
+        <div>
+            <input type="checkbox" name="subgenre[]" value="fantasy" id="fantasy">
+            <label for="fantasy">Fantasy</label>
+        </div>
+        <div>
+            <input type="checkbox" name="subgenre[]" value="mystery" id="mystery">
+            <label for="mystery">Mystery</label>
+        </div>
+        <div>
+            <input type="checkbox" name="subgenre[]" value="historical" id="historical">
+            <label for="historical">Historical</label>
         </div>
 
-    <section class="banner">
-        <h1>Discover Your Next Great Read</h1>
-        <p>Explore our curated selection of books across all genres</p>
-        <a href="all.php?genre=all" class="cta-button">Explore</a>
-    </section>
+        <label class="filter-title">Type:</label>
+        <div>
+            <input type="checkbox" name="type[]" value="hardcover" id="hardcover">
+            <label for="hardcover">Hardcover</label>
+        </div>
+        <div>
+            <input type="checkbox" name="type[]" value="paperback" id="paperback">
+            <label for="paperback">Paperback</label>
+        </div>
+        <div>
+            <input type="checkbox" name="type[]" value="boxset" id="boxset">
+            <label for="boxset">Boxset</label>
+        </div>
+
+        <label class="filter-title">Rating:</label>
+        <div>
+            <input type="checkbox" name="rating[]" value="4" id="rating-4">
+            <label for="rating-4">4+ stars</label>
+        </div>
+        <div>
+            <input type="checkbox" name="rating[]" value="3" id="rating-3">
+            <label for="rating-3">3+ stars</label>
+        </div>
+        <div>
+            <input type="checkbox" name="rating[]" value="2" id="rating-2">
+            <label for="rating-2">2+ stars</label>
+        </div>
+
+        <button type="submit">Filter</button>
+    </form>
+</div>
+
+
 
     <section class="bestsellers">
     <div class="section-header">
-        <h2>Bestsellers in Romance</h2>
-        <a href="all.php?genre=romance" class="view-all">View All <img src="./images/rightarrow.svg" alt=""></a>
+        <h2><?php echo ucfirst($genreFilter); ?> Books</h2>
+        <!-- <a href="catalog.php" class="view-all">View All</a> -->
     </div>
 
-    <div class="scroll-container">
-    <button class="scroll-btn left-btn"><img src="./images/leftarrow.svg" alt=""></button>
     <div class="products">
         <?php if (!empty($books)): ?>
             <?php foreach($books as $book): ?>
                 <div class="product-item">
                     <img src="<?php echo $book['image_URL']; ?>" alt="Book cover">
                     <div class="product-info">
+                        <div class="firstflex">
                             <h3><?php echo $book['title']; ?></h3>
                             <div class="author">
                                 <?php
@@ -112,37 +161,30 @@ $conn->close();
                                 }
                                 ?>
                             </div>
+                            <div class="type"><?php echo $book['Type']; ?> | <?php echo $book['subgenre']; ?></div>
+                            <div class="description text">
+                                <?php echo $book['description']; ?>
+                                <a href="#" class="leesmeer">Lees meer</a>
+                            </div>
+                        </div>
+                        <div class="secondflex">
                             <div class="price">€<?php echo number_format($book['price'], 2); ?></div>
-                            <div class="add-to-cart"><a href="cart.php?book_id=<?php echo $book['id']; ?>"><img src="./images/shopping-cart2.svg" alt=""></a></div>
+                            <div class="stars">★★★★★</div> 
+                            <div class="stock">
+                                <img class="check" src="./images/yes.png" alt=""> 
+                                <p><?php echo $book['stock']; ?> left</p>
+                            </div>
+                            <div class="add-to-cart"><a href="cart.php?book_id=<?php echo $book['id']; ?>">Add to cart</a></div>
+                        </div>
                     </div>
                 </div>
             <?php endforeach; ?>
+        <?php else: ?>
+            <p>No books found.</p>
         <?php endif; ?>
     </div>
-    <button class="scroll-btn right-btn"><img src="./images/rightarrow.svg" alt=""></button> 
-    </div>
 </section>
-
-<div class="genres">
-    <h2>Genres</h2>
-    <div class="genre-list">
-        <div class="genre-list-item list-fiction"><a href="all.php?genre=fiction" class="filter-btn <?php echo ($genreFilter === 'fiction') ? 'active' : ''; ?>">Fiction</a></div>
-        <div class="genre-list-item list-nonfiction"><a href="all.php?genre=nonfiction" class="filter-btn <?php echo ($genreFilter === 'nonfiction') ? 'active' : ''; ?>">Non-Fiction</a></div>
-        <div class="genre-list-item list-romance"><a href="all.php?genre=romance" class="filter-btn <?php echo ($genreFilter === 'romance') ? 'active' : ''; ?>">Romance</a></div>
-        <div class="genre-list-item list-thriller"><a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?>">Thriller</a></div>
-    </div>
 </div>
-
-<section class="newsletter">
-    <div class="newsletter-content">
-        <h2>Subscribe to our Newsletter</h2>
-        <p>Get the latest updates on new books and upcoming sales</p>
-        <form action="subscribe.php" method="post">
-            <input type="email" name="email" placeholder="Enter your email" required>
-            <button type="submit">Subscribe</button>
-        </form>
-    </div>
-</section>
 
     <footer>
         <div class="footer-section">
@@ -214,12 +256,37 @@ $conn->close();
         <img src="./images/overschrijving.png" alt="overschrijving">
     </div>
 
-   
 
     <div class="footer-bottom">
     <p>© 2024 Pageturners</p>
 
     <script src="./js/index.js"></script>
-  
+
+    <script>
+        document.querySelectorAll('.product-item').forEach(function(item) {
+            var stock = parseInt(item.querySelector('.stock p').textContent);
+            var checkImg = item.querySelector('.check');
+            if (stock === 0) {
+                checkImg.src = "./images/no.png";
+                item.querySelector('.stock p').style.color = 'red';
+            } else {
+                checkImg.src = "./images/yes.png";
+            }
+            if (stock < 5 && stock > 0) {
+                item.querySelector('.stock p').innerHTML = 'only ' + stock + ' left!';
+            }
+        });
+
+        document.getElementById('check').addEventListener('change', function() {
+        var menuIcon = document.querySelector('.checkbtn img');
+        if (this.checked) {
+            menuIcon.src = './images/close.svg';
+        } else {
+            menuIcon.src = './images/menu.svg';
+        }
+        });
+    </script>
+   
+
 </body>
 </html>
