@@ -6,6 +6,8 @@ if($_SESSION['loggedin'] !== true){
 }
 
 include 'inc.tinynav.php';
+include_once __DIR__ . '/classes/Review.php';
+// $allComents = Review::getAll();
 
 $conn = new mysqli('localhost', 'root', '', 'bookstore');
 
@@ -26,36 +28,26 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Page</title>
-    <link rel="stylesheet" href="./css/account.css">
-    <link rel="stylesheet" href="./css/inc.footer.css">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/bookreviews.css">
+    <link rel="stylesheet" href="css/inc.footer.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Account Information</h1>
-        <div class="account-details">
-            <p><strong>Name:</strong> John Doe</p>
-            <p><strong>Email:</strong> john.doe@example.com</p>
-            <p><strong>BookBucks:</strong> 1000</p>
-            <P>user since: <?php echo $user['created_at']; ?></P>
-        </div>
-        <div class="change-password">
-            <h2>Change Password</h2>
-            <form action="change_password.php" method="post">
-                <label for="current-password">Current Password:</label>
-                <input type="password" id="current-password" name="current_password" required>
-                <br>
-                <label for="new-password">New Password:</label>
-                <input type="password" id="new-password" name="new_password" required>
-                <br>
-                <label for="confirm-password">Confirm New Password:</label>
-                <input type="password" id="confirm-password" name="confirm_password" required>
-                <br>
-                <button type="submit">Change Password</button>
-            </form>
+    <div class="post_reviews">
+        <div class="post_review_form">
+            <input type="text" id="reviewText" placeholder="What's on your mind?">
+            <a href="#" class="button" id="btnAddReview" data-postid="3">Add Review</a>
         </div>
     </div>
 
+    <ul class="post_reviews_list">
+        <!-- <?php foreach ($allComents as $c): ?>
+            <li><?php echo $c['text']; ?></li>
+        <?php endforeach; ?> -->
+    </ul>
+
+
+    
     <footer>
         <div class="footer-section">
             <div class="foot">
@@ -130,5 +122,6 @@ $conn->close();
 
     <div class="footer-bottom">
     <p>© 2024 Pageturners</p>
+    <script scr="./review.js"></script>
 </body>
 </html>

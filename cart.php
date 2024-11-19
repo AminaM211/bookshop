@@ -27,32 +27,42 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Page</title>
-    <link rel="stylesheet" href="./css/account.css">
+    <link rel="stylesheet" href="./css/cart.css">
     <link rel="stylesheet" href="./css/inc.footer.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Account Information</h1>
-        <div class="account-details">
-            <p><strong>Name:</strong> John Doe</p>
-            <p><strong>Email:</strong> john.doe@example.com</p>
-            <p><strong>BookBucks:</strong> 1000</p>
-            <P>user since: <?php echo $user['created_at']; ?></P>
-        </div>
-        <div class="change-password">
-            <h2>Change Password</h2>
-            <form action="change_password.php" method="post">
-                <label for="current-password">Current Password:</label>
-                <input type="password" id="current-password" name="current_password" required>
-                <br>
-                <label for="new-password">New Password:</label>
-                <input type="password" id="new-password" name="new_password" required>
-                <br>
-                <label for="confirm-password">Confirm New Password:</label>
-                <input type="password" id="confirm-password" name="confirm_password" required>
-                <br>
-                <button type="submit">Change Password</button>
-            </form>
+    <div class="cart-container">
+        <h1>Shoppingcart</h1>
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Aantal</th>
+                    <th>Prijs</th>
+                    <th>Totaal</th>
+                    <th>Verwijderen</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Boek Titel 1</td>
+                    <td>2</td>
+                    <td>€10.00</td>
+                    <td>€20.00</td>
+                    <td><button>Verwijderen</button></td>
+                </tr>
+                <tr>
+                    <td>Boek Titel 2</td>
+                    <td>1</td>
+                    <td>€15.00</td>
+                    <td>€15.00</td>
+                    <td><button>Verwijderen</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="cart-total">
+            <h3>Totaal: €35.00</h3>
+            <button>Doorgaan naar afrekenen</button>
         </div>
     </div>
 
