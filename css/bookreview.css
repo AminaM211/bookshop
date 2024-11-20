@@ -22,3 +22,7 @@ body {
     background-color: #FCF6F2;
     width: 100%;
 }
+
+.container {
+    margin: 40px;
+}

@@ -33,6 +33,7 @@ $conn->close();
     <link rel="stylesheet" href="css/inc.footer.css">
 </head>
 <body>
+    <div class="container">
     <div class="post_reviews">
         <div class="post_review_form">
             <input type="text" id="reviewText" placeholder="What's on your mind?">
@@ -45,7 +46,7 @@ $conn->close();
             <li><?php echo $c['text']; ?></li>
         <?php endforeach; ?> -->
     </ul>
-
+    </div>
 
     
     <footer>
