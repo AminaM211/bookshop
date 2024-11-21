@@ -40,3 +40,16 @@ rightButton.addEventListener('click', () => {
 });
 
 
+    function filterBooksByType() {
+        const selectedType = document.getElementById('type').value;
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // Update the `type` parameter in the query string
+        urlParams.set('type', selectedType);
+
+        // Reload the page with the updated query parameters
+        window.location.href = `${window.location.pathname}?${urlParams.toString()}`;
+    }
+
+    document.getElementById('type').addEventListener('change', filterBooksByType);
+

@@ -44,6 +44,11 @@ header a {
     font-size: 1em;
 }
 
+.product-info a {
+    color: #333;
+    text-decoration: none;
+}
+
 /* _______________________CATEGORIES______________________ */
 
 #categories {

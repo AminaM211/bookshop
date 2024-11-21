@@ -99,9 +99,9 @@ $conn->close();
         <?php if (!empty($books)): ?>
             <?php foreach($books as $book): ?>
                 <div class="product-item">
-                    <img src="<?php echo $book['image_URL']; ?>" alt="Book cover">
+                    <a href="details.php?id=<?php echo $book['id']?>"><img src="<?php echo $book['image_URL']; ?>" alt="Book cover"></a>
                     <div class="product-info">
-                            <h3><?php echo $book['title']; ?></h3>
+                            <a class="product-title" href="details.php?id=<?php echo $book['id']?>"><h3><?php echo $book['title']; ?></h3></a>
                             <div class="author">
                                 <?php
                                 // Controleer of de voornaam en achternaam beschikbaar zijn

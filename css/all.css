@@ -47,6 +47,16 @@ body {
     color: #1d1d1d;
 }
 
+.product-info a {
+    color: #333;
+    text-decoration: none;
+}
+
+.product-info a {
+    color: #333;
+    text-decoration: none;
+}
+
 /* _____________________Bestsellers_____________________ */
 
 
@@ -312,14 +322,19 @@ body {
 
 .filters {
     justify-content: space-between;
-    margin-top: 70px;
 }
 
 
 .product-container {
+    margin-top: 30px;
     display: flex;
     flex-direction: row;
     margin-left: 40px;
+    margin-right: 40px;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+
 }
 
 .filters select {

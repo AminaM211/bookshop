@@ -13,6 +13,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+
 $email = $_SESSION['email'];
 $userStatement = $conn->prepare('SELECT * FROM users WHERE email = ?');
 $userStatement->bind_param('s', $email);
@@ -22,11 +23,9 @@ $user = $userResult->fetch_assoc(); // Verkrijg de gebruiker
 
 // Genre selectie
 $genreFilter = isset($_GET['genre']) ? $_GET['genre'] : 'all';
-$typeFilter = isset($_GET['type']) ? $_GET['type'] : 'all';
-
 
 // Query boeken op basis van genre
-if ($genreFilter === 'all' && $typeFilter === 'all') {
+if ($genreFilter === 'all') {
     $sql = "SELECT books.*, authors.first_name, authors.last_name 
             FROM books 
             LEFT JOIN authors ON books.author_id = authors.id
@@ -35,32 +34,28 @@ if ($genreFilter === 'all' && $typeFilter === 'all') {
     $sql = "SELECT books.*, authors.first_name, authors.last_name 
             FROM books 
             LEFT JOIN authors ON books.author_id = authors.id 
-            WHERE 1=1";
-        
-    if ($genreFilter !== 'all') {
-        $sql .= " AND category_id = (SELECT id FROM categories WHERE name = ?)";
-    }
-    if ($typeFilter !== 'all') {
-        $sql .= " AND books.Type = ?";
-    }
+            WHERE category_id = (SELECT id FROM categories WHERE name = ?)";
 }
 
 $stmt = $conn->prepare($sql);
 
-if ($genreFilter !== 'all' && $typeFilter !== 'all') {
-    $stmt->bind_param('ss', $genreFilter, $typeFilter);  // Bind het geselecteerde genre en type
-} elseif ($genreFilter !== 'all') {
-    $stmt->bind_param('s', $genreFilter);
-} elseif ($typeFilter !== 'all') {
-    $stmt->bind_param('s', $typeFilter);
+if ($genreFilter !== 'all') {
+    $stmt->bind_param('s', $genreFilter);  // Bind het geselecteerde genre
 }
-
 
 $stmt->execute();
 $result = $stmt->get_result();
 $books = $result->fetch_all(MYSQLI_ASSOC);
-// $authors = $result->fetch_all(MYSQLI_ASSOC);
 
+if (!isset($_GET['id']) ){ 
+    exit("Book not found"); 
+} 
+$book_id = $_GET['id']; 
+$bookStatement = $conn->prepare('SELECT * FROM books WHERE id = ?'); 
+$bookStatement->bind_param('i', $book_id); 
+$bookStatement->execute(); 
+$bookResult = $bookStatement->get_result(); 
+$book = $bookResult->fetch_assoc();
 
 // Sluit de databaseverbinding
 $conn->close();
@@ -99,28 +94,7 @@ $conn->close();
         <a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?>">Thriller</a>
     </div>
 
-    <div class="product-container">
-    <div class="section-header">
-        <h2><?php echo ucfirst($genreFilter); ?> Books</h2>
-    </div>
-    <div class="filters">
-        <form method="GET" action="all.php">
-            <!-- <label class="filter-title" for="type"></label> -->
-            <select name="type" id="type">
-                <option value="all">All</option>
-                <option value="hardcover">Hardcover</option>
-                <option value="paperback">Paperback</option>
-                <option value="box Set">Box Set</option>
-            </select>
-        </form>
-    </div>
-    </div>
-
-    <section class="bestsellers">
-    <div class="products">
-        <?php if (!empty($books)): ?>
-            <?php foreach($books as $book): ?>
-                <div class="product-item">
+    <div class="product-item">
                     <a href="details.php?id=<?php echo $book['id']?>"><img src="<?php echo $book['image_URL']; ?>" alt="Book cover"></a>
                     <div class="product-info">
                         <div class="firstflex">
@@ -152,12 +126,14 @@ $conn->close();
                         </div>
                     </div>
                 </div>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <p>No books found.</p>
-        <?php endif; ?>
-    </div>
-</section>
+
+        <div class="post_reviews">
+            <div class="post_review_form">
+                <input type="text" id="reviewText" placeholder="What's on your mind?">
+                <a href="#" class="button" id="btnAddReview" data-postid="3">Add Review</a>
+            </div>
+        </div>
+
 
     <footer>
         <div class="footer-section">
