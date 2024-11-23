@@ -87,7 +87,7 @@ $conn->close();
         <a href="all.php?genre=all" class="cta-button">Explore</a>
     </section>
 
-    <section class="bestsellers">
+<section class="bestsellers">
     <div class="section-header">
         <h2>Bestsellers in Romance</h2>
         <a href="all.php?genre=romance" class="view-all">View All <img src="./images/rightarrow.svg" alt=""></a>

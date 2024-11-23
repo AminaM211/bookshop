@@ -50,12 +50,21 @@ $books = $result->fetch_all(MYSQLI_ASSOC);
 if (!isset($_GET['id']) ){ 
     exit("Book not found"); 
 } 
+
 $book_id = $_GET['id']; 
 $bookStatement = $conn->prepare('SELECT * FROM books WHERE id = ?'); 
 $bookStatement->bind_param('i', $book_id); 
 $bookStatement->execute(); 
 $bookResult = $bookStatement->get_result(); 
 $book = $bookResult->fetch_assoc();
+
+//authors database linken
+$authorStatement = $conn->prepare('SELECT * FROM authors WHERE id = ?');
+$authorStatement->bind_param('i', $book['author_id']);
+$authorStatement->execute();
+$authorResult = $authorStatement->get_result();
+$author = $authorResult->fetch_assoc();
+
 
 // Sluit de databaseverbinding
 $conn->close();
@@ -67,7 +76,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Online bookstore</title>
-    <link rel="stylesheet" href="./css/all.css">
+    <link rel="stylesheet" href="./css/details.css">
     <link rel="stylesheet" href="./css/inc.footer.css">
 </head>
 <body>
@@ -85,7 +94,6 @@ $conn->close();
         </div>
     </nav>
     
-
     <div id="categories">
         <a href="all.php?genre=all" class="filter-btn <?php echo ($genreFilter === 'all') ? 'active' : ''; ?>">All</a>
         <a href="all.php?genre=fiction" class="filter-btn <?php echo ($genreFilter === 'fiction') ? 'active' : ''; ?>">Fiction</a>
@@ -94,46 +102,172 @@ $conn->close();
         <a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?>">Thriller</a>
     </div>
 
-    <div class="product-item">
+    <div class="book-details">
+    <div class="detailsflex">
+        <div class="book-details-image">
+            <img src="<?php echo $book['image_URL']; ?>" alt="Book cover">
+        </div>
+        <div class="book-details-info">
+            <h1><?php echo $book['title'];?></h1>
+            <p class="subgenre"><?php echo $book['subgenre'];?></p>
+            <p class="auteur"><?php echo  $author['first_name'] . " " . $author['last_name']; ?></p>
+            <div class="pricesection">
+                <p class="price">€<?php echo $book['price'];?></p>
+            </div>
+            <!-- <p>Rating: 4.5</p> -->
+            <!-- <p>Pages: 300</p> -->
+            <div class="checkInfo">
+                <div class="check-1">
+                    <img src="./images/yes.png" alt="check">
+                    <p>Levering 1 à 2 werkdagen</p>
+                </div>
+                <div class="check-2">
+                    <img src="./images/yes.png" alt="check">
+                    <p><strong>Haal af na 1 uur</strong> in 127 winkel(s).</p>
+                </div>
+            </div>
+            <div class="add-to-cart">
+                <img src="./images/cart.svg" alt="cart" class="cartimg">
+                <a href="cart.php?book_id=<?php echo $book['id']; ?>">Add to cart</a>
+            </div>
+            <div class="cartInfo">
+                <div class="info">
+                    <img src="./images/shopping-bag.svg" alt="shopping bag">
+                    <p>Eenvoudig bestellen</p>
+                </div>
+                <div class="info">
+                    <img src="./images/truck.svg" alt="truck">
+                    <p>Gratis thuislevering vanaf € 30</p>
+                </div>
+                <div class="info">
+                    <img src="./images/lock.svg" alt="lock">
+                    <p>Veilig betalen</p>
+                </div>
+                <div class="info">
+                    <img src="./images/home.svg" alt="home">
+                    <p>Gratis levering in onze boekhandel in jouw buurt</p>
+                </div>
+            </div>
+        </div>
+        </div>
+            <div class="secondflex">
+                <div class="omschrijving">
+                    <h3>Summary</h3>
+                    <p><?php echo $book['detailed_description'];?></p>
+                </div>
+                <div class="specificaties">
+                    <h3>Specifications</h3>
+                    <div class="">
+                        <h4>Those involved</h4>
+                        <div class="author flex">
+                            <p>Auteur: </p>
+                            <p class="author"><?php echo  $author['first_name'] . " " . $author['last_name']; ?></p>
+                        </div>
+                        <div class="uitgeverij flex">
+                            <p>Uitgeverij: </p>
+                            <p>Gallery Books</p>
+                        </div>  
+                    </div>
+                    <h4>Eigenschappen</h4>
+                    <div class="flex grey">
+                        <p>ISBN: </p>
+                        <p><?php echo $book['ISBN'];?></p>
+                    </div>
+                <div class="flex white">
+                        <p>Verschijningsdatum: </p>
+                        <p><?php echo $book['published_date'];?></p>
+                </div>
+                <div class="flex grey">
+                        <p>Uitvoering: </p>
+                        <p><?php echo $book['Type'];?></p>
+                    </div>
+                </div>
+            </div>
+        
+      
+        <div class="author-info">
+            <div class="author-info-image">
+                <img src="<?php echo $author['profile_picture']; ?>" alt="author image">
+            </div>
+            <div class="author-info-details">
+                <h4><?php echo  $author['first_name'] . " " . $author['last_name']; ?></h4>
+                <p><?php echo $author['biography'];?></p>
+            </div>
+        </div>
+
+        <div class="review">
+                <img src="./images/stars.svg" alt="star">
+                <div class="write-review">
+                    <img src="./images/write.svg" alt="write" class="writeimg">
+                    <a href="bookreview.php?book_id=<?php echo $book['id']; ?>">write a review</a>
+                </div>
+        </div>
+
+        <div class="review-form">
+            <h4>Write a review</h4>
+            <p class="inf" ><span>*</span> Indicates a required field</p>
+            <form action="bookreview.php" method="post">
+                <div class="score">
+                    <p><span>*</span> Score: </p>
+                    <div class="stars">
+                        <input type="radio" id="star5" name="score" value="5" required>
+                        <label for="star5"></label>
+                        <input type="radio" id="star4" name="score" value="4">
+                        <label for="star4"></label>
+                        <input type="radio" id="star3" name="score" value="3">
+                        <label for="star3"></label>
+                        <input type="radio" id="star2" name="score" value="2">
+                        <label for="star2"></label>
+                        <input type="radio" id="star1" name="score" value="1">
+                        <label for="star1"></label>
+                    </div>
+                </div>
+                <label for="Book"> Book: </label>
+                <input readonly class="booktitle" placeholder="<?php echo $book['title']; ?>" name="booktitle">
+                <label for="Title"><span>*</span> Title: </label>
+                <input required type="text" name="title">
+                <label for="review"><span>*</span> Comment:</label>
+                <textarea required name="review"></textarea>
+                <button class="post" type="submit">Post</button>
+            </form>
+        </div>
+    </div>
+
+    <section class="bestsellers">
+    <div class="section-header">
+        <h2>More books from <span>Romance</span></h2>
+        <a href="all.php?genre=romance" class="view-all">View All <img src="./images/rightarrow.svg" alt=""></a>
+    </div>
+
+    <div class="scroll-container">
+    <button class="scroll-btn left-btn"><img src="./images/leftarrow.svg" alt=""></button>
+    <div class="products">
+        <?php if (!empty($books)): ?>
+            <?php foreach($books as $book): ?>
+                <div class="product-item">
                     <a href="details.php?id=<?php echo $book['id']?>"><img src="<?php echo $book['image_URL']; ?>" alt="Book cover"></a>
                     <div class="product-info">
-                        <div class="firstflex">
-                        <a class="product-title" href="details.php?id=<?php echo $book['id']?>"><h3><?php echo $book['title']; ?></h3></a>
-                            <div class="author">
+                            <a class="product-title" href="details.php?id=<?php echo $book['id']?>"><h3><?php echo $book['title']; ?></h3></a>
+                            <div class="product-author">
                                 <?php
                                 // Controleer of de voornaam en achternaam beschikbaar zijn
                                 if (isset($book['first_name']) && isset($book['last_name'])) {
-                                    echo "by " . $book['first_name'] . " " . $book['last_name'];
+                                    echo $book['first_name'] . " " . $book['last_name'];
                                 } else {
                                     echo "Author unknown"; // fallback als auteur niet gevonden wordt
                                 }
                                 ?>
                             </div>
-                            <div class="type"><?php echo $book['Type']; ?> | <?php echo $book['subgenre']; ?></div>
-                            <div class="description text">
-                                <?php echo $book['description']; ?>
-                                <a href="#" class="leesmeer">Lees meer</a>
-                            </div>
-                        </div>
-                        <div class="secondflex">
-                            <div class="price">€<?php echo number_format($book['price'], 2); ?></div>
-                            <div class="stars">★★★★★</div> 
-                            <div class="stock">
-                                <img class="check" src="./images/yes.png" alt=""> 
-                                <p><?php echo $book['stock']; ?> left</p>
-                            </div>
-                            <div class="add-to-cart"><a href="cart.php?book_id=<?php echo $book['id']; ?>">Add to cart</a></div>
-                        </div>
+                            <div class="product-price">€<?php echo number_format($book['price'], 2); ?></div>
+                            <div class="product-add-to-cart"><a href="cart.php?book_id=<?php echo $book['id']; ?>"><img src="./images/shopping-cart2.svg" alt=""></a></div>
                     </div>
                 </div>
-
-        <div class="post_reviews">
-            <div class="post_review_form">
-                <input type="text" id="reviewText" placeholder="What's on your mind?">
-                <a href="#" class="button" id="btnAddReview" data-postid="3">Add Review</a>
-            </div>
-        </div>
-
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
+    <button class="scroll-btn right-btn"><img src="./images/rightarrow.svg" alt=""></button> 
+    </div>
+</section>
 
     <footer>
         <div class="footer-section">

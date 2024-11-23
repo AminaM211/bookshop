@@ -107,10 +107,10 @@ $conn->close();
         <form method="GET" action="all.php">
             <!-- <label class="filter-title" for="type"></label> -->
             <select name="type" id="type">
-                <option value="all">All</option>
-                <option value="hardcover">Hardcover</option>
-                <option value="paperback">Paperback</option>
-                <option value="box Set">Box Set</option>
+                <option value="all" <?php echo ($typeFilter === 'all') ? 'selected' : ''; ?>>All</option>
+                <option value="hardcover" <?php echo ($typeFilter === 'hardcover') ? 'selected' : ''; ?>>Hardcover</option>
+                <option value="paperback" <?php echo ($typeFilter === 'paperback') ? 'selected' : ''; ?>>Paperback</option>
+                <option value="box set" <?php echo ($typeFilter === 'boxset') ? 'selected' : ''; ?>>Boxset</option>
             </select>
         </form>
     </div>
