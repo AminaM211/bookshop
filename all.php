@@ -13,6 +13,19 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// admin check
+$email = $_SESSION['email'];
+$isAdmin = false;
+$adminStatement = $conn->prepare('SELECT * FROM users WHERE email = ?');
+$adminStatement->bind_param('s', $email);
+$adminStatement->execute();
+$adminResult = $adminStatement->get_result();
+$admin = $adminResult->fetch_assoc(); // Verkrijg de gebruiker
+if($admin['is_admin'] === 1){
+    $isAdmin = true;
+}
+
+
 $email = $_SESSION['email'];
 $userStatement = $conn->prepare('SELECT * FROM users WHERE email = ?');
 $userStatement->bind_param('s', $email);
@@ -103,6 +116,8 @@ $conn->close();
     <div class="section-header">
         <h2><?php echo ucfirst($genreFilter); ?> Books</h2>
     </div>
+
+
     <div class="filters">
         <form method="GET" action="all.php">
             <!-- <label class="filter-title" for="type"></label> -->
@@ -115,6 +130,12 @@ $conn->close();
         </form>
     </div>
     </div>
+
+    <?php if($isAdmin): ?>
+        <div class="admin-panel">
+            <a href="addproduct.php">+ Add Product</a>
+        </div>
+    <?php endif; ?>
 
     <section class="bestsellers">
     <div class="products">

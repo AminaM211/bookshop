@@ -113,7 +113,9 @@ $conn->close();
                                 ?>
                             </div>
                             <div class="price">€<?php echo number_format($book['price'], 2); ?></div>
-                            <div class="add-to-cart"><a href="cart.php?book_id=<?php echo $book['id']; ?>"><img src="./images/shopping-cart2.svg" alt=""></a></div>
+                            <!-- <div class="add-to-cart"><a href="javascript:void(0);" onclick="addToCart(<?php echo $book['id']; ?>)"><img src="./images/shopping-cart2.svg" alt=""></a></div> -->
+                            <div class="add-to-cart"><a href="cart.php?id=<?php echo $book['id']; ?>"><img src="./images/shopping-cart2.svg" alt=""></a></div>
+
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -125,11 +127,21 @@ $conn->close();
 
 <div class="genres">
     <h2>Genres</h2>
+    <div class="scrollcont">
     <div class="genre-list">
-        <div class="genre-list-item list-fiction"><a href="all.php?genre=fiction" class="filter-btn <?php echo ($genreFilter === 'fiction') ? 'active' : ''; ?>">Fiction</a></div>
-        <div class="genre-list-item list-nonfiction"><a href="all.php?genre=nonfiction" class="filter-btn <?php echo ($genreFilter === 'nonfiction') ? 'active' : ''; ?>">Non-Fiction</a></div>
-        <div class="genre-list-item list-romance"><a href="all.php?genre=romance" class="filter-btn <?php echo ($genreFilter === 'romance') ? 'active' : ''; ?>">Romance</a></div>
-        <div class="genre-list-item list-thriller"><a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?>">Thriller</a></div>
+        <a href="all.php?genre=fiction" class="filter-btn <?php echo ($genreFilter === 'fiction') ? 'active' : ''; ?> list-fiction">
+            <p>Fiction</p>
+        </a>
+        <a href="all.php?genre=nonfiction" class="filter-btn <?php echo ($genreFilter === 'nonfiction') ? 'active' : ''; ?> list-nonfiction">
+            <p>Non-Fiction</p>
+        </a>
+        <a href="all.php?genre=romance" class="filter-btn <?php echo ($genreFilter === 'romance') ? 'active' : ''; ?> list-romance">
+            <p>Romance</p>
+        </a>
+        <a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?> list-thriller">
+            <p>Thriller</p>
+        </a>
+    </div>
     </div>
 </div>
 

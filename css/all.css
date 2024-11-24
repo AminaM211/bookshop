@@ -8,6 +8,8 @@ body {
     font-family: Arial, sans-serif;
     background-color: #f5f5f5;
     color: #333;
+    margin: 0;
+    padding: 0;
 }
 
 /* _______________________CATEGORIES______________________ */
@@ -55,6 +57,25 @@ body {
 .product-info a {
     color: #333;
     text-decoration: none;
+}
+
+/* ________________________admin_________________________ */
+
+.admin-panel {
+    margin-left: 40px;
+    background-color: #1d1d1d;
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.admin-panel a {
+    color: white;
+    text-decoration: none;
+}
+
+.admin-panel:hover {
+    background-color: #ff5722;
 }
 
 /* _____________________Bestsellers_____________________ */
@@ -338,7 +359,7 @@ body {
 
 .filters select {
     padding: 10px;
-    margin-top: 5px;
+    margin-top: 10px;
     margin-bottom: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;

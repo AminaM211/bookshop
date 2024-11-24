@@ -6,13 +6,14 @@ if($_SESSION['loggedin'] !== true){
 }
 
 include 'inc.nav.php';
+include_once("bootstrap.php");
+
 
 $conn = new mysqli('localhost', 'root', '', 'bookstore');
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-
 
 $email = $_SESSION['email'];
 $userStatement = $conn->prepare('SELECT * FROM users WHERE email = ?');
@@ -102,6 +103,19 @@ $conn->close();
         <a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?>">Thriller</a>
     </div>
 
+    <div id="cart-popup" class="popup">
+        <div class="popup-content">
+            <div class="title">
+                <img src="./images/yes.png" alt="">
+                <h5>Product has been added to your cart!</h5>
+            </div>
+            <div class="buttons">
+                <button class='go' onclick="goToCart()">To my shoppingcart</button>
+                <button class='continue' onclick="continueShopping()">Continue shopping</button>
+            </div>
+        </div>
+    </div>
+
     <div class="book-details">
     <div class="detailsflex">
         <div class="book-details-image">
@@ -119,33 +133,36 @@ $conn->close();
             <div class="checkInfo">
                 <div class="check-1">
                     <img src="./images/yes.png" alt="check">
-                    <p>Levering 1 à 2 werkdagen</p>
+                    <p>Delivery within 1 to 2 working days</p>
                 </div>
                 <div class="check-2">
                     <img src="./images/yes.png" alt="check">
-                    <p><strong>Haal af na 1 uur</strong> in 127 winkel(s).</p>
+                    <p><strong>Pick up after 1 hour</strong> in 127 stores.</p>
                 </div>
             </div>
-            <div class="add-to-cart">
+            <form action="addtocart.php" method="POST" class="add-to-cart-form">
+            <div onclick="addToCart(<?php echo $book['id']; ?>)" class="add-to-cart">
                 <img src="./images/cart.svg" alt="cart" class="cartimg">
-                <a href="cart.php?book_id=<?php echo $book['id']; ?>">Add to cart</a>
+                <a href="#">Add to cart</a>
             </div>
+            </form>
+
             <div class="cartInfo">
                 <div class="info">
                     <img src="./images/shopping-bag.svg" alt="shopping bag">
-                    <p>Eenvoudig bestellen</p>
+                    <p>Easy to order</p>
                 </div>
                 <div class="info">
                     <img src="./images/truck.svg" alt="truck">
-                    <p>Gratis thuislevering vanaf € 30</p>
+                    <p>Free home delivery from €30</p>
                 </div>
                 <div class="info">
                     <img src="./images/lock.svg" alt="lock">
-                    <p>Veilig betalen</p>
+                    <p>Secure payment</p>
                 </div>
                 <div class="info">
                     <img src="./images/home.svg" alt="home">
-                    <p>Gratis levering in onze boekhandel in jouw buurt</p>
+                    <p>Free delivery in our bookstore near you</p>
                 </div>
             </div>
         </div>
@@ -164,21 +181,21 @@ $conn->close();
                             <p class="author"><?php echo  $author['first_name'] . " " . $author['last_name']; ?></p>
                         </div>
                         <div class="uitgeverij flex">
-                            <p>Uitgeverij: </p>
+                            <p>Publisher: </p>
                             <p>Gallery Books</p>
                         </div>  
                     </div>
-                    <h4>Eigenschappen</h4>
+                    <h4>Features</h4>
                     <div class="flex grey">
                         <p>ISBN: </p>
                         <p><?php echo $book['ISBN'];?></p>
                     </div>
                 <div class="flex white">
-                        <p>Verschijningsdatum: </p>
+                        <p>Published date: </p>
                         <p><?php echo $book['published_date'];?></p>
                 </div>
                 <div class="flex grey">
-                        <p>Uitvoering: </p>
+                        <p>Type: </p>
                         <p><?php echo $book['Type'];?></p>
                     </div>
                 </div>
@@ -344,6 +361,8 @@ $conn->close();
     <p>© 2024 Pageturners</p>
 
     <script src="./js/index.js"></script>
+    <script src="cart.js"></script>
+
 
     <script>
         document.querySelectorAll('.product-item').forEach(function(item) {
@@ -368,6 +387,24 @@ $conn->close();
             menuIcon.src = './images/menu.svg';
         }
         });
+
+        function addToCart(bookId) {
+            // Simuleer toevoegen aan winkelwagen (hier kun je je backend-koppeling toevoegen)
+            console.log("Artikel toegevoegd aan winkelwagen.");
+
+            // Toon de pop-up
+            document.getElementById("cart-popup").style.display = "block";
+        }
+
+        function continueShopping() {
+        document.getElementById("cart-popup").style.display = "none";
+        }
+
+        function goToCart() {
+        window.location.href = "cart.php";
+        }
+
+        
     </script>
    
 

@@ -10,60 +10,105 @@ body {
     color: #333;
 }
 
-.cart-container {
-    margin: 30px 50px 50px 50px;
-}
-
-.cart-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 25px 0;
-}
-
-.empty-cart {
+.falseadmin {
+    margin: 40px;
     text-align: center;
 }
 
-.empty-cart h3{
-    color: #333;
+.falseadmin h2 {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.falseadmin p {
+    font-size: 0.8em;
+}
+
+.trueAdmin {
+    margin: 40px;
+}
+
+.trueAdmin h2 {
     margin-bottom: 30px;
 }
 
-.btn-continue-shopping {
-    background-color: #333;
-    width: 60vw;
-    color: white;
-    padding: 12px 30px;
-    text-align: center;
-    border: none;
-    border-radius: 25px; 
-    cursor: pointer; 
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-    transition: all 0.1s ease; 
-    margin-top: 15px;
+.form-cointainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+form {
+    width: 100%;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
     margin-bottom: 20px;
-    gap: 8px;
-    font-size: 0.9em;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.empty-cart a {
-    color: white;
-    text-decoration: none;
+.form-group label {
+    font-size: 1em;
 }
 
-.btn-continue-shopping:hover {
+.form-group input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-container button {
+    width: 100%;
+    padding: 13px;
+    margin: 10px 0;
+    background-color: #333333;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+}
+
+.form-container button:hover {
     background-color: #FF5722;
 }
 
-.empty-cart img {
-    width: 250px;
-    margin-bottom: 20px;
+.error {
+    color: red;
+    font-size: 1em;
+    margin: 10px;
 }
 
-.column-book-cover img {
-    width: 100px;
-    height: 150px;
-    margin-right: 20px;
+.success {
+    color: rgb(23, 180, 17);
+    font-size: 1em;
+    margin: 10px;
+}
+
+.form-group select {
+    padding: 11px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.author {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.author .form-group {
+    width: 50%;
+}
+
+
+.author-container p {
+    font-size: 1em;
 }
 
 

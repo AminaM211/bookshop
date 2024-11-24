@@ -64,7 +64,7 @@ header nav {
     margin-top: 20px;
 }
 
-.change-password input[type="password"] {
+.change-password input {
     width: 100%;
     padding: 10px;
     margin: 10px 0;
@@ -72,17 +72,73 @@ header nav {
 
 .change-password button[type="submit"] {
     width: 100%;
-    padding: 10px;
+    padding: 13px;
     margin: 10px 0;
     background-color: #333333;
     color: #fff;
     border: none;
+    border-radius: 20px;
 }
 
 .change-password button[type="submit"]:hover {
     background-color: #FF5722;
 }
 
-.change-password {
+.coins img {
+    width: 26px;
+    margin-bottom: 10px;
+}
+
+.coins {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.usersince {
+    margin: 15px 0;
+    border: 1px solid #c9c9c9;
+    padding: 10px;
+    font-style: italic;
+}
+
+.usersince:hover {
+    background-image: url(../images/party.jpg);
+    background-size: 140%;
+    background-repeat: no-repeat;
+    background-position: bottom;
+    font-weight: bold;
+    color: #fff;
+}
+
+.error {
     margin-top: 20px;
+    color: #ff0000;
+}
+
+.success {
+    margin-top: 20px;
+    color: #00be00;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    margin-left: 15%;
+    margin-right: 15%;
+    gap: 50px;
+    justify-content: space-between;
+}
+
+@media (max-width: 768px) {
+    .container {
+        display: flex;
+        flex-direction: column;
+        gap: 25%; 
+        margin-left: 60px;
+        margin-right: 60px;
+    }
+    .change-password {
+        margin-top: 20px;
+    }
 }
