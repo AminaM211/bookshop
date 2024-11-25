@@ -95,10 +95,10 @@ $conn->close();
             <P class='usersince'>User since: <?php echo $user['created_at']; ?></P>
         </div>
     </div>
+    
     <?php if($isAdmin): ?>
         <div class="admin-panel">
-            <h2>Admin Panel</h2>
-            <a href="admin.php">Admin Panel</a>
+            <a href="addproduct.php">+ Add Product</a>
         </div>
     <?php endif; ?>
 

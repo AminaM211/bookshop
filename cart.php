@@ -1,6 +1,6 @@
 <?php
 session_start();
-if($_SESSION['loggedin'] !== true){
+if ($_SESSION['loggedin'] !== true) {
     header('Location: login.php');
     exit();
 }
@@ -13,11 +13,16 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Ophalen van auteurs
+$authorsStatement = $conn->prepare('SELECT id, CONCAT(first_name, " ", last_name) AS full_name FROM authors');
+$authorsStatement->execute();
+$authorsResult = $authorsStatement->get_result();
+$authors = $authorsResult->fetch_all(MYSQLI_ASSOC);
 
-// Assuming you have a cart table with a user_id column
-$userId = $_SESSION['user_id']; // Make sure to store user ID in session during login
-$sql = "SELECT books.* FROM books
+$userId = $_SESSION['user_id']; // Ensure user ID is in session
+$sql = "SELECT books.*, cart.quantity, authors.first_name, authors.last_name FROM books
         INNER JOIN cart ON books.id = cart.book_id
+        INNER JOIN authors ON books.author_id = authors.id
         WHERE cart.user_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $userId);
@@ -25,82 +30,87 @@ $stmt->execute();
 $result = $stmt->get_result();
 $cartBooks = $result->fetch_all(MYSQLI_ASSOC);
 
-
+// Get user info
 $email = $_SESSION['email'];
 $userStatement = $conn->prepare('SELECT * FROM users WHERE email = ?');
 $userStatement->bind_param('s', $email);
 $userStatement->execute();
 $userResult = $userStatement->get_result();
-$user = $userResult->fetch_assoc(); // Verkrijg de gebruiker
+$user = $userResult->fetch_assoc();
 
-// Genre selectie
-$genreFilter = isset($_GET['genre']) ? $_GET['genre'] : 'all';
+// when adding another book to cart, check if the book is already in the cart, if so, increase quantity
 
-// Query boeken op basis van genre
-if ($genreFilter === 'all') {
-    $sql = "SELECT books.*, authors.first_name, authors.last_name 
-            FROM books 
-            LEFT JOIN authors ON books.author_id = authors.id
-            ORDER BY RAND()";
-} else {
-    $sql = "SELECT books.*, authors.first_name, authors.last_name 
-            FROM books 
-            LEFT JOIN authors ON books.author_id = authors.id 
-            WHERE category_id = (SELECT id FROM categories WHERE name = ?)";
+
+// Verwijder product als de verwijderknop is ingedrukt
+if (isset($_POST['remove_product'])) {
+    $product_id = $_POST['remove_product'];
+
+    // Verwijder het product uit de winkelwagen
+    $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ? AND book_id = ?");
+    $stmt->bind_param('ii', $userId, $product_id);
+
+    if ($stmt->execute()) {
+        echo "<meta http-equiv='refresh' content='0'>";
+    } else {
+        echo "Error: " . $conn->error;
+    }
 }
 
-$stmt = $conn->prepare($sql);
+// update quantity met - 1 + 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $bookId = $_POST['book_id'];
+    $action = $_POST['action'];
 
-if ($genreFilter !== 'all') {
-    $stmt->bind_param('s', htmlspecialchars($genreFilter));  // Bind het geselecteerde genre
+    if ($action === 'increase') {
+        // Voeg 1 toe aan de hoeveelheid en verdubbel de prijs
+        $stmt = $conn->prepare("UPDATE cart 
+                                INNER JOIN books ON cart.book_id = books.id 
+                                SET cart.quantity = cart.quantity + 1
+                                WHERE cart.user_id = ? AND cart.book_id = ?");
+    } elseif ($action === 'decrease') {
+        // Verwijder 1 van de hoeveelheid, maar niet onder 1
+        $stmt = $conn->prepare("UPDATE cart 
+                                INNER JOIN books ON cart.book_id = books.id 
+                                SET cart.quantity = GREATEST(cart.quantity - 1, 1)
+                                WHERE cart.user_id = ? AND cart.book_id = ?");
+    }
+
+    // Update quantity
+    $stmt->bind_param('ii', $userId, $bookId);
+    $stmt->execute();
+
+    // Als quantity 1 is en actie is decrease, verwijder het product uit de cart
+    if ($action === 'decrease') {
+        $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ? AND book_id = ? AND quantity = 1");
+        $stmt->bind_param('ii', $userId, $bookId);
+        $stmt->execute();
+    }
+
+    $stmt->bind_param('ii', $userId, $bookId);
+    $stmt->execute();
+
+    // Refresh de pagina om de wijzigingen te laten zien
+    echo "<meta http-equiv='refresh' content='0'>";
+    // exit();
 }
 
-$stmt->execute();
-$result = $stmt->get_result();
-$books = $result->fetch_all(MYSQLI_ASSOC);
 
-if(!isset($_GET['id']) || empty($_GET['id'])){
-    $isCartEmpty = true; 
-    $book = null;
-    $author = null;
-} else {
-    $isCartEmpty = false;
-    $book_id = $_GET['id']; 
-
-    $bookStatement = $conn->prepare('SELECT * FROM books WHERE id = ?'); 
-    $bookStatement->bind_param('i', $book_id); 
-    $bookStatement->execute(); 
-    $bookResult = $bookStatement->get_result(); 
-    $book = $bookResult->fetch_assoc();
-
-    //authors database linken
-    $authorStatement = $conn->prepare('SELECT * FROM authors WHERE id = ?');
-    $authorStatement->bind_param('i', $book['author_id']);
-    $authorStatement->execute();
-    $authorResult = $authorStatement->get_result();
-    $author = $authorResult->fetch_assoc();
-}
-
-//authors database linken
-// $authorStatement = $conn->prepare('SELECT * FROM authors WHERE id = ?');
-// $authorStatement->bind_param('i', $book['author_id']);
-// $authorStatement->execute();
-// $authorResult = $authorStatement->get_result();
-// $author = $authorResult->fetch_assoc();
 
 $conn->close();
-?><!DOCTYPE html>
+?>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Page</title>
+    <title>Shopping Cart</title>
     <link rel="stylesheet" href="./css/cart.css">
     <link rel="stylesheet" href="./css/inc.footer.css">
 </head>
 <body>
 <nav>
-        <input type="checkbox" id="check">
+    <input type="checkbox" id="check">
         <label for="check" class="checkbtn">
             <i><img src="./images/menu.svg" alt=""></i>
         </label>
@@ -113,6 +123,7 @@ $conn->close();
         </div>
     </nav>
     
+
     <div id="categories">
         <a href="all.php?genre=all" class="filter-btn <?php echo ($genreFilter === 'all') ? 'active' : ''; ?>">All</a>
         <a href="all.php?genre=fiction" class="filter-btn <?php echo ($genreFilter === 'fiction') ? 'active' : ''; ?>">Fiction</a>
@@ -123,111 +134,97 @@ $conn->close();
 
     <div class="cart-container">
         <div class="column-1">
-            <?php if ($isCartEmpty): ?>
-            <div class="empty-cart">
-                <img class="cartimg" src="./images/emptycart.png" alt="">
-                <h3>Your shopping cart is empty.</h3>
-                <a href="index.php" class="btn-continue-shopping">Continue Shopping</a>
-            </div>
+            <?php if (empty($cartBooks)): ?>
+                <div class="empty-cart">
+                    <img class="cartimg" src="./images/emptycart.png" alt="">
+                    <h3>Your shopping cart is empty.</h3>
+                    <a href="index.php" class="btn-continue-shopping">Continue Shopping</a>
+                </div>
             <?php else: ?>
-            <h1>My shoppingcart</h1>
-            <div class="column-book-cover">
-                <a href="details.php?id=<?php echo $book['id']?>">
-                    <img src="<?php echo $book['image_URL']; ?>" alt="Book cover">
+                <h1>My Shopping Cart</h1>
+                <div class="row">
+                    <div class="book-products">
+                    <?php
+                        $total = 0;
+                        foreach ($cartBooks as $book):
+                            $bookTotal = $book['price'] * $book['quantity'];
+                            $total += $bookTotal;
+                        ?>
+                        <div class="column-book">
+                            <div class="column-book-cover">
+                                <a href="details.php?id=<?php echo $book['id']; ?>">
+                                    <img src="<?php echo $book['image_URL']; ?>" alt="Book cover">
+                                </a>
+                            </div>
+                            <div class="column-book-details">
+                                <div class="title-flex">
+                                    <h5><?php echo $book['title'];?></h5>
+                                    <form method="POST" action="">
+                                        <button type="submit" name="remove_product" value="<?php echo $book['id']; ?>">Delete</button>
+                                    </form>
+                                </div>
+
+                                <p class="auteur"><?php echo $book['first_name'] . " " . $book['last_name']; ?></p>
+                                <div class="type"><?php echo $book['Type']; ?> | <?php echo $book['subgenre']; ?></div>
+                                <div class="basket-amount">
+
+                                    <div class="quantity">
+                                        <form method="POST" action="cart.php">
+                                            <input type="hidden" name="book_id" value="<?php echo $book['id']; ?>">
+                                            <button type="submit" name="action" value="decrease">-</button>
+                                        </form>
+                                        <input type="text" value="<?php echo $book['quantity']; ?>" readonly class="quantity-input">
+                                        <form method="POST" action="cart.php">
+                                            <input type="hidden" name="book_id" value="<?php echo $book['id']; ?>">
+                                            <button type="submit" name="action" value="increase">+</button>
+                                        </form>
+                                    </div>
+
+                                    <div class="singleprice">
+                                        <p class="price">€<?php echo $book['price']; ?></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                    </div>
+                    <div class="secondflex">
+                        <div class="subtotal">
+                            <p>Subtotal</p>
+                            <p class="price">€<?php echo $total; ?></p>
+                        </div>
+                        <div class="Delivery">
+                            <p>Delivery Cost</p>
+                            <p>€4.95</p>
+                        </div>
+                        <div class="cart-total">
+                            <p>Total</p>
+                            <div class="cart-total-flex">
+                                <p>incl. btw</p>
+                                <p class="price">€<?php echo number_format($total + 4.95, 2); ?></p>
+                            </div>
+                        </div>
+              
+                        <div class="checkout">
+                            <a href="checkout.php">Proceed to Checkout</a>
+                        </div>
+                    </div>
+                </div>
+            <div class="goback">
+                <a class="continue" href="index.php">
+                    <img src="./images/backtotop.png" alt="">
+                    Continue shopping
                 </a>
             </div>
-            <div class="column-book-details">
-                <div class="title-flex">
-                    <h5><?php echo $book['title'];?></h5>
-                    <a data-bind="css: { disabled: updating() }, click: updating() ? '' : removeFromBasketWithApproval.bind($data, 'ca5d943fbc094758ba20d6906cbac344')" data-action="remove" class="c-link c-link--minor c-basket-product__remove o-flex__fixed" href="#"> Verwijderen </a>
-                </div>
-                <p class="auteur"><?php echo  $author['first_name'] . " " . $author['last_name']; ?></p>
-                <div class="type"><?php echo $book['Type']; ?> | <?php echo $book['subgenre']; ?></div>
-                <div class="pricesection">
-                    <p class="price">€<?php echo $book['price'];?></p>
-                </div>
-            </div>
             <?php endif; ?>
+
         </div>
-        
-        
     </div>
 
-    <footer>
-        <div class="footer-section">
-            <div class="foot">
-                <h3>Klantendienst</h3>
-                <ul>
-                    <li><a href="#">Help</a></li>
-                    <li><a href="#">Contact</a></li>
-                    <li><a href="#">Veelgestelde vragen</a></li>
-                </ul>
-            </div>
-            <div class="foot">
-                <h3>Over Ons</h3>
-                <ul>
-                    <li><a href="#">Ons Verhaal</a></li>
-                    <li><a href="#">Ons Team</a></li>
-                    <li><a href="#">Werken bij ons</a></li>
-                </ul>
-            </div>
-            <div class="foot">
-                <h3>Services</h3>
-                <ul>
-                    <li><a href="#">Gift Cards</a></li>
-                    <li><a href="#">Verzending</a></li>
-                    <li><a href="#">Retourneren</a></li>
-                </ul>
-            </div>
-            <div class="foot">
-                <h3>B2B</h3>
-                <ul>
-                    <li><a href="#">Bibliotheken</a></li>
-                    <li><a href="#">Facturatie</a></li>
-                </ul>
-            </div>
-            <div class="foot">
-                <h3>Volg Ons</h3>
-                <ul>
-                    <li><a href="instagram.com">Instagram</a></li>
-                    <li><a href="Facebook.com">Facebook</a></li>
-                    <li><a href="Twitter.com">X</a></li>
-                </ul>
-            </div>
-        </div>
-    </footer>
-
-    <div class="kleineletters"> 
-        <p>
-            <a href="#">VERKOOPVOORWAARDEN</a>
-            &nbsp;|&nbsp;
-            <a href="#">PRIVACYVERKLARING</a>
-            &nbsp;|&nbsp;
-            <a href="#">DISCLAIMER</a>
-            &nbsp;|&nbsp;
-            <a href="#">COOKIEVERKLARING</a>
-            &nbsp;|&nbsp;
-            <a href="#">VOORWAARDEN VOOR REVIEWS</a>
-        </p>
-    </div>
-
-   
-    <div class="paymentmethods">
-        <img src="./images/bancontact.png" alt="bancontact">
-        <img src="./images/visa.png" alt="visa">
-        <img src="./images/mastercard.png" alt="mastercard">
-        <img src="./images/applepay.png" alt="applepay">
-        <img src="./images/kbc.png" alt="kbc">
-        <img src="./images/belfius.png" alt="belfius">
-        <img src="./images/ideal.png" alt="ideal">
-        <img src="./images/overschrijving.png" alt="overschrijving">
-    </div>
-
-   
-
-    <div class="footer-bottom">
-    <p>© 2024 Pageturners</p>
-
+    <?php include 'inc.footer.php'; ?>
+    
     <script src="./js/cart.js"></script>
+
+
 </body>
 </html>

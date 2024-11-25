@@ -173,6 +173,7 @@ $conn->close();
 
     <?php if($isAdmin === false): ?>
     <div class="falseadmin">
+        <img src="./images/connectionlost.svg" alt="">
         <h1>OOPS!</h1>
         <h2>We couldn't find this page...</h2>
         <p>Need help? Please call us any 

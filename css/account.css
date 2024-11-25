@@ -142,3 +142,23 @@ header nav {
         margin-top: 20px;
     }
 }
+
+/* ________________________admin_________________________ */
+
+.admin-panel {
+    margin-top: 10px;
+    background-color: #1d1d1d;
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 5px;
+    width: 125px;
+}
+
+.admin-panel a {
+    color: white;
+    text-decoration: none;
+}
+
+.admin-panel:hover {
+    background-color: #ff5722;
+}
