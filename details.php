@@ -7,7 +7,7 @@ if($_SESSION['loggedin'] !== true){
 
 include 'inc.nav.php';
 include_once("bootstrap.php");
-
+include 'cartpopup.php';
 
 $conn = new mysqli('localhost', 'root', '', 'bookstore');
 
@@ -120,22 +120,7 @@ $conn->close();
         <a href="all.php?genre=nonfiction" class="filter-btn <?php echo ($genreFilter === 'nonfiction') ? 'active' : ''; ?>">Non-Fiction</a>
         <a href="all.php?genre=romance" class="filter-btn <?php echo ($genreFilter === 'romance') ? 'active' : ''; ?>">Romance</a>
         <a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?>">Thriller</a>
-    </div>
-
-    <div id="cart-popup" class="popup">
-        <div class="popup-content">
-            <div class="title">
-                <img src="./images/yes.png" alt="">
-                <h5>Product has been added to your cart!</h5>
-            </div>
-            <div class="buttons">
-                <button class='go' onclick="goToCart()">To my shoppingcart</button>
-                <button class='continue' onclick="continueShopping()">Continue shopping</button>
-            </div>
-        </div>
-    </div>
-
-  
+    </div>  
 
     <div class="book-details">
     <div class="detailsflex">
@@ -161,12 +146,10 @@ $conn->close();
                     <p><strong>Pick up after 1 hour</strong> in 127 stores.</p>
                 </div>
             </div>
-            <form action="addtocart.php" method="POST" class="add-to-cart-form">
-            <div onclick="addToCart(<?php echo $book['id']; ?>)" class="add-to-cart">
-                <img src="./images/cart.svg" alt="cart" class="cartimg">
-                <a href="#">Add to cart</a>
-            </div>
-            </form>
+
+            <div class="add-to-cart"><a class="add" data-product-id="<?php echo $book['id']; ?>"><img src="./images/cart.svg" alt=""><p>Add to cart</p></a></div>
+            
+
 
             <div class="cartInfo">
                 <div class="info">
@@ -292,19 +275,12 @@ $conn->close();
                     <a href="details.php?id=<?php echo $book['id']?>"><img src="<?php echo $book['image_URL']; ?>" alt="Book cover"></a>
                     <div class="product-info">
                             <a class="product-title" href="details.php?id=<?php echo $book['id']?>"><h3><?php echo $book['title']; ?></h3></a>
+                            <div class="subgenre"><?php echo ($book['subgenre']); ?></div>
                             <div class="product-author">
-                                <?php
-                                // Controleer of de voornaam en achternaam beschikbaar zijn
-                                if (isset($book['first_name']) && isset($book['last_name'])) {
-                                    echo $book['first_name'] . " " . $book['last_name'];
-                                } else {
-                                    echo "Author unknown"; // fallback als auteur niet gevonden wordt
-                                }
-                                ?>
+                                <?php echo $book['first_name'] . " " . $book['last_name'];?>
                             </div>
                             <div class="product-price">€<?php echo number_format($book['price'], 2); ?></div>
-                            <div class="product-add-to-cart"><a href="cart.php?book_id=<?php echo $book['id']; ?>"><img src="./images/shopping-cart2.svg" alt=""></a></div>
-                    </div>
+                                                </div>
                 </div>
             <?php endforeach; ?>
         <?php endif; ?>
@@ -313,127 +289,10 @@ $conn->close();
     </div>
 </section>
 
-    <footer>
-        <div class="footer-section">
-            <div class="foot">
-                <h3>Klantendienst</h3>
-                <ul>
-                    <li><a href="#">Help</a></li>
-                    <li><a href="#">Contact</a></li>
-                    <li><a href="#">Veelgestelde vragen</a></li>
-                </ul>
-            </div>
-            <div class="foot">
-                <h3>Over Ons</h3>
-                <ul>
-                    <li><a href="#">Ons Verhaal</a></li>
-                    <li><a href="#">Ons Team</a></li>
-                    <li><a href="#">Werken bij ons</a></li>
-                </ul>
-            </div>
-            <div class="foot">
-                <h3>Services</h3>
-                <ul>
-                    <li><a href="#">Gift Cards</a></li>
-                    <li><a href="#">Verzending</a></li>
-                    <li><a href="#">Retourneren</a></li>
-                </ul>
-            </div>
-            <div class="foot">
-                <h3>B2B</h3>
-                <ul>
-                    <li><a href="#">Bibliotheken</a></li>
-                    <li><a href="#">Facturatie</a></li>
-                </ul>
-            </div>
-            <div class="foot">
-                <h3>Volg Ons</h3>
-                <ul>
-                    <li><a href="instagram.com">Instagram</a></li>
-                    <li><a href="Facebook.com">Facebook</a></li>
-                    <li><a href="Twitter.com">X</a></li>
-                </ul>
-            </div>
-        </div>
-    </footer>
 
-    <div class="kleineletters"> 
-        <p>
-            <a href="#">VERKOOPVOORWAARDEN</a>
-            &nbsp;|&nbsp;
-            <a href="#">PRIVACYVERKLARING</a>
-            &nbsp;|&nbsp;
-            <a href="#">DISCLAIMER</a>
-            &nbsp;|&nbsp;
-            <a href="#">COOKIEVERKLARING</a>
-            &nbsp;|&nbsp;
-            <a href="#">VOORWAARDEN VOOR REVIEWS</a>
-        </p>
-    </div>
-
-   
-    <div class="paymentmethods">
-        <img src="./images/bancontact.png" alt="bancontact">
-        <img src="./images/visa.png" alt="visa">
-        <img src="./images/mastercard.png" alt="mastercard">
-        <img src="./images/applepay.png" alt="applepay">
-        <img src="./images/kbc.png" alt="kbc">
-        <img src="./images/belfius.png" alt="belfius">
-        <img src="./images/ideal.png" alt="ideal">
-        <img src="./images/overschrijving.png" alt="overschrijving">
-    </div>
-
-
-    <div class="footer-bottom">
-    <p>© 2024 Pageturners</p>
+    <?php include 'inc.footer.php'; ?>
 
     <script src="./js/index.js"></script>
-    <script src="cart.js"></script>
-
-
-    <script>
-        document.querySelectorAll('.product-item').forEach(function(item) {
-            var stock = parseInt(item.querySelector('.stock p').textContent);
-            var checkImg = item.querySelector('.check');
-            if (stock === 0) {
-                checkImg.src = "./images/no.png";
-                item.querySelector('.stock p').style.color = 'red';
-            } else {
-                checkImg.src = "./images/yes.png";
-            }
-            if (stock < 5 && stock > 0) {
-                item.querySelector('.stock p').innerHTML = 'only ' + stock + ' left!';
-            }
-        });
-
-        document.getElementById('check').addEventListener('change', function() {
-        var menuIcon = document.querySelector('.checkbtn img');
-        if (this.checked) {
-            menuIcon.src = './images/close.svg';
-        } else {
-            menuIcon.src = './images/menu.svg';
-        }
-        });
-
-        function addToCart(bookId) {
-            // Simuleer toevoegen aan winkelwagen (hier kun je je backend-koppeling toevoegen)
-            console.log("Artikel toegevoegd aan winkelwagen.");
-
-            // Toon de pop-up
-            document.getElementById("cart-popup").style.display = "block";
-        }
-
-        function continueShopping() {
-        document.getElementById("cart-popup").style.display = "none";
-        }
-
-        function goToCart() {
-        window.location.href = "cart.php";
-        }
-
-        
-    </script>
-   
-
+    <script src="./js/cart.js"></script>
 </body>
 </html>

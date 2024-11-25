@@ -204,7 +204,6 @@ $conn->close();
     </div>
 
     <?php include 'inc.footer.php'; ?>
-    
     <script src="./js/cart.js"></script>
 
 

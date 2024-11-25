@@ -6,6 +6,7 @@ if($_SESSION['loggedin'] !== true){
 }
 
 include 'inc.nav.php';
+include 'cartpopup.php';
 
 
 $conn = new mysqli('localhost', 'root', '', 'bookstore');
@@ -116,7 +117,6 @@ $conn->close();
     
                             <div class="add-to-cart"><a class="add" data-product-id="<?php echo $book['id']; ?>"><img src="./images/shopping-cart2.svg" alt=""></a></div>
 
-
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -146,91 +146,19 @@ $conn->close();
     </div>
 </div>
 
-<section class="newsletter">
-    <div class="newsletter-content">
-        <h2>Subscribe to our Newsletter</h2>
-        <p>Get the latest updates on new books and upcoming sales</p>
-        <form action="subscribe.php" method="post">
-            <input type="email" name="email" placeholder="Enter your email" required>
-            <button type="submit">Subscribe</button>
-        </form>
-    </div>
-</section>
-
-    <footer>
-        <div class="footer-section">
-            <div class="foot">
-                <h3>Klantendienst</h3>
-                <ul>
-                    <li><a href="#">Help</a></li>
-                    <li><a href="#">Contact</a></li>
-                    <li><a href="#">Veelgestelde vragen</a></li>
-                </ul>
-            </div>
-            <div class="foot">
-                <h3>Over Ons</h3>
-                <ul>
-                    <li><a href="#">Ons Verhaal</a></li>
-                    <li><a href="#">Ons Team</a></li>
-                    <li><a href="#">Werken bij ons</a></li>
-                </ul>
-            </div>
-            <div class="foot">
-                <h3>Services</h3>
-                <ul>
-                    <li><a href="#">Gift Cards</a></li>
-                    <li><a href="#">Verzending</a></li>
-                    <li><a href="#">Retourneren</a></li>
-                </ul>
-            </div>
-            <div class="foot">
-                <h3>B2B</h3>
-                <ul>
-                    <li><a href="#">Bibliotheken</a></li>
-                    <li><a href="#">Facturatie</a></li>
-                </ul>
-            </div>
-            <div class="foot">
-                <h3>Volg Ons</h3>
-                <ul>
-                    <li><a href="instagram.com">Instagram</a></li>
-                    <li><a href="Facebook.com">Facebook</a></li>
-                    <li><a href="Twitter.com">X</a></li>
-                </ul>
-            </div>
+    <section class="newsletter">
+        <div class="newsletter-content">
+            <h2>Subscribe to our Newsletter</h2>
+            <p>Get the latest updates on new books and upcoming sales</p>
+            <form action="subscribe.php" method="post">
+                <input type="email" name="email" placeholder="Enter your email" required>
+                <button type="submit">Subscribe</button>
+            </form>
         </div>
-    </footer>
+    </section>
 
-    <div class="kleineletters"> 
-        <p>
-            <a href="#">VERKOOPVOORWAARDEN</a>
-            &nbsp;|&nbsp;
-            <a href="#">PRIVACYVERKLARING</a>
-            &nbsp;|&nbsp;
-            <a href="#">DISCLAIMER</a>
-            &nbsp;|&nbsp;
-            <a href="#">COOKIEVERKLARING</a>
-            &nbsp;|&nbsp;
-            <a href="#">VOORWAARDEN VOOR REVIEWS</a>
-        </p>
-    </div>
 
-   
-    <div class="paymentmethods">
-        <img src="./images/bancontact.png" alt="bancontact">
-        <img src="./images/visa.png" alt="visa">
-        <img src="./images/mastercard.png" alt="mastercard">
-        <img src="./images/applepay.png" alt="applepay">
-        <img src="./images/kbc.png" alt="kbc">
-        <img src="./images/belfius.png" alt="belfius">
-        <img src="./images/ideal.png" alt="ideal">
-        <img src="./images/overschrijving.png" alt="overschrijving">
-    </div>
-
-   
-
-    <div class="footer-bottom">
-    <p>© 2024 Pageturners</p>
+    <?php include 'inc.footer.php'; ?>
 
     <script src="./js/index.js"></script>
     <script src="./js/cart.js"></script>

@@ -116,7 +116,7 @@ body {
     margin-top: 0.6em;
 }
 
-.subgenre {
+.book-details-info .subgenre {
     font-size: 1em;
     margin-top: 0.6em;
     color: gray;
@@ -141,7 +141,7 @@ body {
     font-size: 0.7em;
 } 
 
-.add-to-cart {
+.add {
     background-color: #ff6f61;
     width: 98%;
     padding-top: 15px;
@@ -156,7 +156,6 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
     transition: all 0.2s ease; 
     margin-top: 15px;
-    margin-left: -9px;
     margin-bottom: 20px;
     display: flex;
     justify-content: center;
@@ -165,7 +164,7 @@ body {
     gap: 15px;
 }
 
-.add-to-cart:hover {
+.add:hover {
     background-color: #ff4f3a; 
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
 }
@@ -422,91 +421,6 @@ textarea {
     background-color: #ff5722;
 }
 
-/* __________________POP UP____________________ */
-
-.popup {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparant achtergrond */
-    z-index: 1000;
-  }
-  
-  .popup-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 20px;
-    text-align: center;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    text-wrap: nowrap;
-  }
-  
-  .popup-content .go {
-    padding: 10px 20px;
-    background-color: #ff6f61;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .popup-content .continue {
-    padding: 0px 5px;
-    /* color: white; */
-    border: none;
-    border-bottom: #e55447 2px solid;
-    background: none;
-    cursor: pointer;
-  }
-
-  .continue {
-    margin-top: 6px;
-    margin-bottom: 6px;
-  }
-
-  .buttons {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    justify-content: center;
-    margin-top: 20px;
-  }
-  
-  .popup-content .go:hover {
-    background-color: #e55447;
-  }
-
-  .popup-content .continue:hover {
-    color: #e55447;
-  }
-
-  .title h5 {
-    color: #5cac3c;
-    font-weight: normal;
-    font-size: 1em;
-    text-wrap: nowrap;
-  }
-
-  .title img {
-    width: 20px;
-    height: 20px;
-  }
-
-  .title {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-  }
 
 /* ___________________more books_________________ */
 
@@ -645,6 +559,11 @@ h3 {
     color: rgb(93, 160, 62);
 }
 
+.product-info .subgenre {
+    font-size: 0.7em;
+    color: gray;
+    margin: 0.3em 0;
+}
 
 .product-add-to-cart a {
     color: white;

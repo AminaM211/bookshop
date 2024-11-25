@@ -6,6 +6,8 @@ if($_SESSION['loggedin'] !== true){
 }
 
 include 'inc.nav.php';
+include 'cartpopup.php';
+
 
 $conn = new mysqli('localhost', 'root', '', 'bookstore');
 
