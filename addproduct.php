@@ -28,6 +28,7 @@ if($admin['is_admin'] === 1){
     $isAdmin = false;
 }
 
+
 // Ophalen van auteurs
 $authorsStatement = $conn->prepare('SELECT id, CONCAT(first_name, " ", last_name) AS full_name FROM authors');
 $authorsStatement->execute();
@@ -256,13 +257,13 @@ $conn->close();
             </div>
 
             <div class="form-group">
-            <label for="description">Description:</label>
-            <input type="text" id="description" name="description" required>
+                <label for="description">Description:</label>
+                <textarea type="text" id="description" name="description" required></textarea>
             </div>
 
             <div class="form-group">
-            <label for="detailed_description">Detailed Description:</label>
-            <input type="text" id="detailed_description" name="detailed_description" required>
+                <label for="detailed_description">Detailed Description:</label>
+                <textarea type="text" id="detailed_description" name="detailed_description" required></textarea>
             </div>
 
             <button class="add" type="submit">Add Product</button>

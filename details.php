@@ -15,6 +15,18 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// admin check
+$email = $_SESSION['email'];
+$isAdmin = false;
+$adminStatement = $conn->prepare('SELECT * FROM users WHERE email = ?');
+$adminStatement->bind_param('s', $email);
+$adminStatement->execute();
+$adminResult = $adminStatement->get_result();
+$admin = $adminResult->fetch_assoc(); // Verkrijg de gebruiker
+if($admin['is_admin'] === 1){
+    $isAdmin = true;
+}
+
 $email = $_SESSION['email'];
 $userStatement = $conn->prepare('SELECT * FROM users WHERE email = ?');
 $userStatement->bind_param('s', $email);
@@ -59,12 +71,19 @@ $bookStatement->execute();
 $bookResult = $bookStatement->get_result(); 
 $book = $bookResult->fetch_assoc();
 
+if (!$book) {
+    exit("Book not found");
+}
+
 //authors database linken
-$authorStatement = $conn->prepare('SELECT * FROM authors WHERE id = ?');
-$authorStatement->bind_param('i', $book['author_id']);
-$authorStatement->execute();
-$authorResult = $authorStatement->get_result();
-$author = $authorResult->fetch_assoc();
+$author = null;
+if ($book) {
+    $authorStatement = $conn->prepare('SELECT * FROM authors WHERE id = ?');
+    $authorStatement->bind_param('i', $book['author_id']);
+    $authorStatement->execute();
+    $authorResult = $authorStatement->get_result();
+    $author = $authorResult->fetch_assoc();
+}
 
 
 // Sluit de databaseverbinding
@@ -116,6 +135,8 @@ $conn->close();
         </div>
     </div>
 
+  
+
     <div class="book-details">
     <div class="detailsflex">
         <div class="book-details-image">
@@ -124,7 +145,7 @@ $conn->close();
         <div class="book-details-info">
             <h1><?php echo $book['title'];?></h1>
             <p class="subgenre"><?php echo $book['subgenre'];?></p>
-            <p class="auteur"><?php echo  $author['first_name'] . " " . $author['last_name']; ?></p>
+            <p class="auteur"><?php echo $author ? $author['first_name'] . " " . $author['last_name'] : 'Author unknown'; ?></p>
             <div class="pricesection">
                 <p class="price">€<?php echo $book['price'];?></p>
             </div>
@@ -165,6 +186,12 @@ $conn->close();
                     <p>Free delivery in our bookstore near you</p>
                 </div>
             </div>
+
+            <?php if($isAdmin): ?>
+            <div class="admin-panel">
+                <a href="editproduct.php?id=<?php echo $book['id']?>"> Edit details </a>
+            </div>
+        <?php endif; ?>
         </div>
         </div>
             <div class="secondflex">
@@ -178,7 +205,7 @@ $conn->close();
                         <h4>Those involved</h4>
                         <div class="author flex">
                             <p>Auteur: </p>
-                            <p class="author"><?php echo  $author['first_name'] . " " . $author['last_name']; ?></p>
+                            <p class="author"><?php echo $author ? $author['first_name'] . " " . $author['last_name'] : 'Author unknown'; ?></p>
                         </div>
                         <div class="uitgeverij flex">
                             <p>Publisher: </p>

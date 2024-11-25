@@ -401,6 +401,27 @@ textarea {
     font-size: 0.9em;
 }
 
+/* ________________________admin_________________________ */
+
+.admin-panel {
+    /* margin-left: 40px; */
+    margin-top: 20px;
+    background-color: #1d1d1d;
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 5px;
+    width: 100px;    
+}
+
+.admin-panel a {
+    color: white;
+    text-decoration: none;
+}
+
+.admin-panel:hover {
+    background-color: #ff5722;
+}
+
 /* __________________POP UP____________________ */
 
 .popup {

@@ -64,7 +64,7 @@ form {
     border-radius: 5px;
 }
 
-.form-container button {
+.form-container .add {
     width: 100%;
     padding: 13px;
     margin: 10px 0;
@@ -74,8 +74,28 @@ form {
     border-radius: 20px;
 }
 
-.form-container button:hover {
+.form-container .add:hover {
     background-color: #FF5722;
+}
+
+.delete {
+    width: 100%;
+    padding: 13px;
+    background-color: #FF5722;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+}
+
+.delete:hover {
+    background-color: #ff8a66;
+}
+ 
+textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .error {
