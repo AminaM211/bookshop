@@ -168,7 +168,8 @@ $conn->close();
                                 <img class="check" src="./images/yes.png" alt=""> 
                                 <p><?php echo $book['stock']; ?> left</p>
                             </div>
-                            <div class="add-to-cart"><a href="cart.php?book_id=<?php echo $book['id']; ?>">Add to cart</a></div>
+                            <div class="add-to-cart"><a class="add" data-product-id="<?php echo $book['id']; ?>">Add to cart</a></div>
+
                         </div>
                     </div>
                 </div>
@@ -182,7 +183,8 @@ $conn->close();
     <?php include 'inc.footer.php'; ?>
 
     <script src="./js/index.js"></script>
-
+    <script src="./js/cart.js"></script>
+    
     <script>
         document.querySelectorAll('.product-item').forEach(function(item) {
             var stock = parseInt(item.querySelector('.stock p').textContent);

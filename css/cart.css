@@ -8,7 +8,7 @@
 /* Body */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
+    background-color: #f5f5f5;
     color: #333;
 }
 
@@ -166,9 +166,11 @@ body {
 }
 
 .goback {
-    border-bottom: #FF5722 1.5px solid;
     width: 172px;
+}
 
+.goback:hover {
+    border-bottom: #FF5722 1.5px solid;
 }
 
 .continue img {

@@ -39,22 +39,7 @@ $userResult = $userStatement->get_result();
 $user = $userResult->fetch_assoc();
 
 // when adding another book to cart, check if the book is already in the cart, if so, increase quantity
-
-
-// Verwijder product als de verwijderknop is ingedrukt
-if (isset($_POST['remove_product'])) {
-    $product_id = $_POST['remove_product'];
-
-    // Verwijder het product uit de winkelwagen
-    $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ? AND book_id = ?");
-    $stmt->bind_param('ii', $userId, $product_id);
-
-    if ($stmt->execute()) {
-        echo "<meta http-equiv='refresh' content='0'>";
-    } else {
-        echo "Error: " . $conn->error;
-    }
-}
+// ...
 
 // update quantity met - 1 + 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -159,9 +144,6 @@ $conn->close();
                             <div class="column-book-details">
                                 <div class="title-flex">
                                     <h5><?php echo $book['title'];?></h5>
-                                    <form method="POST" action="">
-                                        <button type="submit" name="remove_product" value="<?php echo $book['id']; ?>">Delete</button>
-                                    </form>
                                 </div>
 
                                 <p class="auteur"><?php echo $book['first_name'] . " " . $book['last_name']; ?></p>
