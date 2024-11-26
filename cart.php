@@ -39,7 +39,7 @@ $userResult = $userStatement->get_result();
 $user = $userResult->fetch_assoc();
 
 // when adding another book to cart, check if the book is already in the cart, if so, increase quantity
-// ...
+
 
 // update quantity met - 1 + 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -47,37 +47,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'];
 
     if ($action === 'increase') {
-        // Voeg 1 toe aan de hoeveelheid en verdubbel de prijs
+        // Increase quantity by 1
         $stmt = $conn->prepare("UPDATE cart 
-                                INNER JOIN books ON cart.book_id = books.id 
-                                SET cart.quantity = cart.quantity + 1
-                                WHERE cart.user_id = ? AND cart.book_id = ?");
+                                SET quantity = quantity + 1
+                                WHERE user_id = ? AND book_id = ?");
+        $stmt->bind_param('ii', $userId, $bookId);
+        $stmt->execute();
     } elseif ($action === 'decrease') {
-        // Verwijder 1 van de hoeveelheid, maar niet onder 1
+        // Decrease quantity by 1, but not below 1
         $stmt = $conn->prepare("UPDATE cart 
-                                INNER JOIN books ON cart.book_id = books.id 
-                                SET cart.quantity = GREATEST(cart.quantity - 1, 1)
-                                WHERE cart.user_id = ? AND cart.book_id = ?");
-    }
+                                SET quantity = quantity - 1
+                                WHERE user_id = ? AND book_id = ?");
+        $stmt->bind_param('ii', $userId, $bookId);
+        $stmt->execute();
 
-    // Update quantity
-    $stmt->bind_param('ii', $userId, $bookId);
-    $stmt->execute();
-
-    // Als quantity 1 is en actie is decrease, verwijder het product uit de cart
-    if ($action === 'decrease') {
-        $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ? AND book_id = ? AND quantity = 1");
+        // If quantity becomes 1 and action is decrease, delete the item from the cart
+        $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ? AND book_id = ? AND quantity = 0");
         $stmt->bind_param('ii', $userId, $bookId);
         $stmt->execute();
     }
 
-    $stmt->bind_param('ii', $userId, $bookId);
-    $stmt->execute();
-
-    // Refresh de pagina om de wijzigingen te laten zien
+    // Refresh the page to reflect the changes
     echo "<meta http-equiv='refresh' content='0'>";
     // exit();
 }
+
+// if you get 2 of the same books in the cart, delete one of them and increase the quantity of the other
+    $sql = "
+    SELECT book_id, SUM(quantity) AS total_quantity
+    FROM cart
+    WHERE user_id = ?
+    GROUP BY book_id
+    HAVING COUNT(book_id) > 1
+";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param('i', $userId);
+$stmt->execute();
+$result = $stmt->get_result();
+
+while ($row = $result->fetch_assoc()) {
+    $bookId = $row['book_id'];
+    $totalQuantity = $row['total_quantity'];
+
+    // Update the quantity for one row
+    $conn->query("UPDATE cart SET quantity = $totalQuantity WHERE user_id = $userId AND book_id = $bookId LIMIT 1");
+
+    // Delete other duplicate rows
+    $conn->query("DELETE FROM cart WHERE user_id = $userId AND book_id = $bookId AND quantity != $totalQuantity");
+}
+
 
 
 
@@ -153,12 +172,12 @@ $conn->close();
                                     <div class="quantity">
                                         <form method="POST" action="cart.php">
                                             <input type="hidden" name="book_id" value="<?php echo $book['id']; ?>">
-                                            <button type="submit" name="action" value="decrease">-</button>
+                                            <button class="decrease" type="submit" name="action" value="decrease">-</button>
                                         </form>
                                         <input type="text" value="<?php echo $book['quantity']; ?>" readonly class="quantity-input">
                                         <form method="POST" action="cart.php">
                                             <input type="hidden" name="book_id" value="<?php echo $book['id']; ?>">
-                                            <button type="submit" name="action" value="increase">+</button>
+                                            <button class="increase" type="submit" name="action" value="increase">+</button>
                                         </form>
                                     </div>
 
@@ -204,6 +223,7 @@ $conn->close();
     </div>
 
     <?php include 'inc.footer.php'; ?>
+    
     <script src="./js/cart.js"></script>
 
 

@@ -1,0 +1,142 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+h1 {
+    font-size: 2rem;
+    /* margin-bottom: 20px; */
+    text-align: center;
+}
+
+h2 {
+    font-size: 1.5rem;
+    color: #ff6f61;
+    text-align: center;
+    margin-top: 0;
+}
+
+h3 {
+    font-size: 1.2rem;
+    margin-top: 20px;
+}
+
+/* Container for the entire page */
+.confirmation-container {
+    width: 80%;
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.confirmation-container p {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.5;
+}
+
+.success {
+    text-align: center;
+}
+
+/* Order Items List */
+ul.order-items-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul.order-items-list li {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+ul.order-items-list li:last-child {
+    border-bottom: none;
+}
+
+/* Buttons */
+.btn-continue-shopping {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #ff6f61;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.btn-continue-shopping:hover {
+    background-color: #ff5b4c;
+}
+
+/* Shipping and Order Summary Styles */
+.shipping-details p,
+.order-summary p {
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.shipping-details strong,
+.order-summary strong {
+    font-weight: bold;
+}
+
+.order-summary h3,
+.shipping-details h3 {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+/* Total Section */
+h3 + p {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+}
+
+h3 + p + h3 {
+    margin-top: 20px;
+}
+
+.shippingdetails-info p {
+    margin: 0;
+}
+
+/* Cart Footer */
+.goback a {
+    display: block;
+    text-decoration: none;
+    /* padding: 5px 0px; */
+    border-radius: 25px;
+    color: #FF5722;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+}
+
+.goback {
+    width: 172px;
+}
+
+.goback:hover {
+    border-bottom: #FF5722 1.5px solid;
+}
+
+.continue img {
+    transform: rotate(-90deg);
+    width: 15px;
+}
