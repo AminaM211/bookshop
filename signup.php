@@ -31,10 +31,8 @@
             $hash = password_hash($password, PASSWORD_DEFAULT, $options); // Hash het wachtwoord
 
             // Voeg de gebruiker toe aan de database
-            $statement = $conn->prepare('INSERT INTO users (name, email, password) VALUES (:name, :email, :password)');
-            $statement->bindValue(':name', $name);
-            $statement->bindValue(':email', $email); // Beveiligd voor SQL injectie
-            $statement->bindValue(':password', $hash);
+            $statement = $conn->prepare('INSERT INTO users (name, email, password) VALUES (?, ?, ?)');
+            $statement->bind_param('sss', $name, $email, $hash); // Beveiligd voor SQL injectie
             $statement->execute();
 
             // Redirect naar de login pagina na succesvolle registratie
