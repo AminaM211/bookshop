@@ -4,12 +4,14 @@
 	$name = isset($_SESSION['name']) ? $_SESSION['name'] : null;
 
 	function canLogin($p_email, $p_password){ 
-		$conn = new PDO('mysql:host=localhost;dbname=bookstore', 'root', '');
-		$statement = $conn->prepare('SELECT * FROM users WHERE email = :email');
-		$statement->bindValue(':email', $p_email);
+		// $conn = new PDO('mysql:host=localhost;dbname=bookstore', 'root', '');
+		$conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'bookstore', 11795);
+		$statement = $conn->prepare('SELECT * FROM users WHERE email = ?');
+		$statement->bind_param('s', $p_email);
 		$statement->execute();
+		$result = $statement->get_result();
 
-		$user = $statement->fetch(PDO::FETCH_ASSOC);
+		$user = $result->fetch_assoc();
 
 		if (!$user) {
 			return false; // No user found with that email
