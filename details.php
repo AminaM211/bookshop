@@ -9,7 +9,9 @@ include 'inc.nav.php';
 include_once("bootstrap.php");
 include 'cartpopup.php';
 
-$conn = new mysqli('localhost', 'root', '', 'bookstore');
+// $conn = new mysqli('localhost', 'root', '', 'bookstore');
+$conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'bookstore', 11795);
+
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);

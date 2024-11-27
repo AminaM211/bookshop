@@ -3,8 +3,8 @@
     $name = isset($_SESSION['name']) ? $_SESSION['name'] : null;
 
     // Maak verbinding met de database
-    $conn = new PDO('mysql:host=localhost;dbname=bookstore', 'root', '');
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'bookstore', 11795);
+
 
     // Controleer of er POST-data is verzonden
     if(!empty($_POST)){
@@ -13,10 +13,11 @@
         $password = $_POST['password'];
 
         // Controleer of het e-mailadres al bestaat
-        $checkEmail = $conn->prepare('SELECT COUNT(*) FROM users WHERE email = :email');
-        $checkEmail->bindValue(':email', $email);
+        $checkEmail = $conn->prepare('SELECT COUNT(*) FROM users WHERE email = ?');
+        $checkEmail->bind_param('s', $email);
         $checkEmail->execute();
-        $emailExists = $checkEmail->fetchColumn();
+        $checkEmail->bind_result($emailExists);
+        $checkEmail->fetch();
 
         if ($emailExists) {
             // Toon een foutmelding als het e-mailadres al bestaat

@@ -7,7 +7,9 @@ if ($_SESSION['loggedin'] !== true) {
 
 include 'inc.nav.php';
 
-$conn = new mysqli('localhost', 'root', '', 'bookstore');
+// $conn = new mysqli('localhost', 'root', '', 'bookstore');
+$conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'bookstore', 11795);
+
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
