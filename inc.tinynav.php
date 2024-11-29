@@ -4,8 +4,7 @@ if($_SESSION['loggedin'] !== true){
     exit();
 }
 
-// $conn = new mysqli('localhost', 'root', '', 'bookstore');
-$conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'bookstore', 11795);
+$conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'railway', 11795);
 
 
 if ($conn->connect_error) {

@@ -4,8 +4,7 @@
 	$name = isset($_SESSION['name']) ? $_SESSION['name'] : null;
 
 	function canLogin($p_email, $p_password){ 
-		// $conn = new PDO('mysql:host=localhost;dbname=bookstore', 'root', '');
-		$conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'bookstore', 11795);
+		$conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'railway', 11795);
 		$statement = $conn->prepare('SELECT * FROM users WHERE email = ?');
 		$statement->bind_param('s', $p_email);
 		$statement->execute();

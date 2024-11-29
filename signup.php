@@ -1,9 +1,8 @@
 <?php
-
     $name = isset($_SESSION['name']) ? $_SESSION['name'] : null;
 
     // Maak verbinding met de database
-    $conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'bookstore', 11795);
+    $conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'railway', 11795);
 
 
     // Controleer of er POST-data is verzonden
