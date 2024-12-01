@@ -102,19 +102,43 @@ ul.order-items-list li:last-child {
 }
 
 /* Total Section */
-h3 + p {
-    font-size: 1rem;
-    font-weight: bold;
-    color: #333;
+
+.checkout-summary {
+    padding-top: 15px;
+    margin-top: 15px;
+    margin-bottom: 20px;
 }
 
-h3 + p + h3 {
-    margin-top: 20px;
+.checkout-summary p, .checkout-summary h3 {
+    margin: 5px 0;
 }
 
-.shippingdetails-info p {
-    margin: 0;
+.checkout-summary h3:nth-of-type(1) {
+font-weight: 100;
+text-decoration: line-through;
 }
+
+
+.bkcbks {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-weight: 100;
+}
+
+.cart-total-price-options p:nth-of-type(2) {
+    font-size: 1.2em;
+}
+
+.cart-total-price-options p:nth-of-type(1) {
+    font-weight: 100;
+    text-decoration: line-through;
+}
+
+.bkcbks img {
+    width: 25px;
+}
+
 
 /* Cart Footer */
 .goback a {
@@ -130,6 +154,7 @@ h3 + p + h3 {
 
 .goback {
     width: 172px;
+    margin-top: 10px;
 }
 
 .goback:hover {
@@ -139,4 +164,69 @@ h3 + p + h3 {
 .continue img {
     transform: rotate(-90deg);
     width: 15px;
+}
+
+/* Title & Price Styling */
+.column-book-details .title-flex h5 {
+    font-size: 1.1em;
+    font-weight: 400;
+    color: #333;
+}
+
+.title-flex h5 {
+    margin: 0;
+}
+
+
+.column-book-details .type {
+    color: #777;
+    /* margin-top: 5px; */
+    font-size: 0.9em;
+}
+
+.column-book-details .auteur {
+    color: #555;
+    margin: 5px 0;
+}
+
+.column-book-details .basket-amount {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* margin-top: 10px; */
+}
+
+.column-book {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.book-products {
+    border-top: 1px solid #ddd;
+    border-bottom:  1px solid #ddd;
+    padding: 20px 0;
+    margin-top: 20px;
+}
+
+.book-products h2 {
+    font-size: 18px;
+}
+
+
+/* Cart Item */
+.column-book-cover img {
+    width: 100px;
+    height: 160px;
+    object-fit: cover;
+    margin-right: 20px;
+    border-radius: 5px;
+}
+
+.column-book-details {
+    width: 30vw;
+}
+
+.secondflex {
+    width: 70vw;
 }

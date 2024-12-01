@@ -5,9 +5,6 @@ if ($_SESSION['loggedin'] !== true) {
     exit();
 }
 
-include 'inc.tinynav.php';
-
-// $conn = new mysqli('localhost', 'root', '', 'bookstore');
 $conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'railway', 11795);
 
 if ($conn->connect_error) {
@@ -35,11 +32,21 @@ $grandTotal = $total + $deliveryCost;
 
 // Checkout form submission logic
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = $_POST['name'];
-    $address = $_POST['address'];
-    $city = $_POST['city'];
-    $postalCode = $_POST['postal_code'];
-    $phone = $_POST['phone'];
+    $name = htmlspecialchars(trim($_POST['name']));
+    $address = htmlspecialchars(trim($_POST['address']));
+    $city = htmlspecialchars(trim($_POST['city']));
+    $postalCode = htmlspecialchars(floatval($_POST['postal_code']));
+    $phone = htmlspecialchars(trim($_POST['phone']));
+
+    // Validate postal code (minimum 4 numbers)
+    if ($postalCode < 4) {
+        die("Invalid postal code.");
+    }
+
+    // Validate phone number (must be a number)
+    if (!is_numeric($phone)) {
+        die("Invalid phone number.");
+    }
 
     // Save the order details in the database
     $orderSql = "INSERT INTO orders (user_id, name, address, city, postal_code, phone, total) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -47,12 +54,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $orderStmt->bind_param('isssssd', $userId, $name, $address, $city, $postalCode, $phone, $grandTotal);
     $orderStmt->execute();
 
-    // Clear the cart after placing the order
-    $conn->query("DELETE FROM cart WHERE user_id = $userId");
+    $orderId = $conn->insert_id; // Get the last inserted order ID
+    $orderItemsSql = "INSERT INTO order_items (order_id, book_id, quantity, price) VALUES (?, ?, ?, ?)";
+    $orderItemsStmt = $conn->prepare($orderItemsSql);
+    foreach ($cartBooks as $item) {
+        $bookId = $item['id'];
+        $quantity = $item['quantity'];
+        $price = $item['price'];
+        $orderItemsStmt->bind_param('iiid', $orderId, $bookId, $quantity, $price);
+        $orderItemsStmt->execute();
+    }
 
     header('Location: confirmation.php');
     exit();
 }
+
+
 
 $conn->close();
 ?>
@@ -66,6 +83,7 @@ $conn->close();
     <link rel="stylesheet" href="./css/checkout.css">
 </head>
 <body>
+    <?php include 'inc.nav.php'; ?>
     <div class="checkout-container">
         <h1>Checkout</h1>
         <form method="POST" class="checkout-form">
@@ -123,6 +141,7 @@ $conn->close();
             <p>Subtotal: €<?php echo number_format($total, 2); ?></p>
             <p>Delivery: €<?php echo number_format($deliveryCost, 2); ?></p>
             <h3>Total: €<?php echo number_format($total + $deliveryCost, 2); ?></h3>
+            <h3 class="bkcbks"><img src="./images/bookbuck.svg" alt="" class="bookbucks"><?php echo number_format($total + 4.95); ?></h3>
         </div>
 
         <button type="submit" class="btn-checkout">Place Order</button>    

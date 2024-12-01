@@ -71,35 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Refresh the page to reflect the changes
     echo "<meta http-equiv='refresh' content='0'>";
-    // exit();
+    exit();
 }
-
-// if you get 2 of the same books in the cart, delete one of them and increase the quantity of the other
-    $sql = "
-    SELECT book_id, SUM(quantity) AS total_quantity
-    FROM cart
-    WHERE user_id = ?
-    GROUP BY book_id
-    HAVING COUNT(book_id) > 1
-";
-
-$stmt = $conn->prepare($sql);
-$stmt->bind_param('i', $userId);
-$stmt->execute();
-$result = $stmt->get_result();
-
-while ($row = $result->fetch_assoc()) {
-    $bookId = $row['book_id'];
-    $totalQuantity = $row['total_quantity'];
-
-    // Update the quantity for one row
-    $conn->query("UPDATE cart SET quantity = $totalQuantity WHERE user_id = $userId AND book_id = $bookId LIMIT 1");
-
-    // Delete other duplicate rows
-    $conn->query("DELETE FROM cart WHERE user_id = $userId AND book_id = $bookId AND quantity != $totalQuantity");
-}
-
-
 
 
 $conn->close();
@@ -202,9 +175,9 @@ $conn->close();
                         </div>
                         <div class="cart-total">
                             <p>Total</p>
-                            <div class="cart-total-flex">
-                                <p>incl. btw</p>
-                                <p class="price">€<?php echo number_format($total + 4.95, 2); ?></p>
+                            <div class="cart-total-price-options">
+                                    <p class="price">incl. btw &nbsp;&nbsp; €<?php echo number_format($total + 4.95, 2); ?></p>
+                                    <p class="bkcbks"><img src="./images/bookbuck.svg" alt="" class="bookbucks"><?php echo number_format($total + 4.95); ?></p>
                             </div>
                         </div>
               

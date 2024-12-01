@@ -15,6 +15,7 @@ if ($conn->connect_error) {
 
 $userId = $_SESSION['user_id'];
 
+
 // Fetch the last order placed by the user
 $orderSql = "SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT 1";
 $stmt = $conn->prepare($orderSql);
@@ -24,10 +25,21 @@ $orderResult = $stmt->get_result();
 $order = $orderResult->fetch_assoc();
 
 // Fetch the order items
-$orderItemsSql = "SELECT books.id, books.title, books.price, books.image_URL, order_items.quantity 
-                  FROM order_items
-                  INNER JOIN books ON order_items.book_id = books.id
-                  WHERE order_items.order_id = ?";
+$orderItemsSql = "
+    SELECT 
+        books.id, 
+        books.title, 
+        books.price, 
+        books.image_URL, 
+        books.subgenre, 
+        books.Type, 
+        order_items.quantity, 
+        authors.first_name, 
+        authors.last_name 
+    FROM order_items
+    INNER JOIN books ON order_items.book_id = books.id
+    LEFT JOIN authors ON books.author_id = authors.id
+    WHERE order_items.order_id = ?";
 $orderItemsStmt = $conn->prepare($orderItemsSql);
 $orderItemsStmt->bind_param('i', $order['id']);
 $orderItemsStmt->execute();
@@ -58,6 +70,9 @@ if (!$order) {
         $insertOrderItemStmt->execute();
     }
 }
+
+// Clear the cart after placing the order
+$conn->query("DELETE FROM cart WHERE user_id = $userId");
 
 // Step 3: Clear the cart after the order is successfully placed
 $clearCartSql = "DELETE FROM cart WHERE user_id = ?";
@@ -117,7 +132,7 @@ $conn->close();
                     <div class="basket-amount">
 
                         <div class="singleprice">
-                            <p class="price">€<?php echo $book['price']; ?></p>
+                            <p class="price"><?php echo $book['quantity']?> x €<?php echo $book['price']; ?></p>
                         </div>
                     </div>
                 </div>
@@ -129,10 +144,12 @@ $conn->close();
             </div>
         <?php endif; ?>
 
-        <h3>Total</h3>
-        <p>Subtotal: €<?php echo number_format($total, 2); ?></p>
-        <p>Delivery: €<?php echo number_format($deliveryCost, 2); ?></p>
-        <h3>Total: €<?php echo number_format($grandTotal, 2); ?></h3>
+        <div class="checkout-summary">
+            <p>Subtotal: €<?php echo number_format($total, 2); ?></p>
+            <p>Delivery: €<?php echo number_format($deliveryCost, 2); ?></p>
+            <h3>Total: €<?php echo number_format($total + $deliveryCost, 2); ?></h3>
+            <h3 class="bkcbks"><img src="./images/bookbuck.svg" alt="" class="bookbucks"><?php echo number_format($total + 4.95); ?></h3>
+        </div>
 
         <div class="goback">
                 <a class="continue" href="index.php">
