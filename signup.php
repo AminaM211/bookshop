@@ -17,6 +17,7 @@
         $checkEmail->execute();
         $checkEmail->bind_result($emailExists);
         $checkEmail->fetch();
+        $checkEmail->close();
 
         if ($emailExists) {
             // Toon een foutmelding als het e-mailadres al bestaat
