@@ -5,70 +5,47 @@ if($_SESSION['loggedin'] !== true){
     exit();
 }
 
-include 'inc.tinynav.php';
+include 'inc.nav.php';
+include_once './classes/Db.php';
+include './classes/user.php';
+include './classes/Admin.php';
+include './classes/Order.php';
 
-$conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'railway', 11795);
+// Maak databaseverbinding
+$db = new Database();
+$conn = $db->connect();
 
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-$userId = $_SESSION['user_id'];
-
+// Haal de huidige gebruiker op
+$email = $_SESSION['email'];
+$user = new User($conn, $email);
+$userData = $user->getUserData();
 
 // admin check
-$email = $_SESSION['email'];
-$isAdmin = false;
-$adminStatement = $conn->prepare('SELECT * FROM users WHERE email = ?');
-$adminStatement->bind_param('s', $email);
-$adminStatement->execute();
-$adminResult = $adminStatement->get_result();
-$admin = $adminResult->fetch_assoc(); // Verkrijg de gebruiker
-if($admin['is_admin'] === 1){
-    $isAdmin = true;
-}
+$admin = new Admin($conn);
+$isAdmin = $admin->isAdmin($email);
 
 $userId = $_SESSION['user_id'];
 
+// Maak een Order-object aan
+$neworder = new Order($conn, $userId);
 
-// Fetch the last order placed by the user
-$orderSql = "SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT 1";
-$stmt = $conn->prepare($orderSql);
-$stmt->bind_param('i', $userId);
-$stmt->execute();
-$orderResult = $stmt->get_result();
-$order = $orderResult->fetch_assoc();
+// Haal de laatste bestelling op
+$order = $neworder->fetchLastOrder();
 
-// Fetch the order items
-$orderItemsSql = "
-    SELECT 
-        books.id, 
-        books.title, 
-        books.price, 
-        books.image_URL, 
-        books.subgenre, 
-        books.Type, 
-        order_items.quantity, 
-        authors.first_name, 
-        authors.last_name 
-    FROM order_items
-    INNER JOIN books ON order_items.book_id = books.id
-    LEFT JOIN authors ON books.author_id = authors.id
-    WHERE order_items.order_id = ?";
-$orderItemsStmt = $conn->prepare($orderItemsSql);
-$orderItemsStmt->bind_param('i', $order['id']);
-$orderItemsStmt->execute();
-$orderItemsResult = $orderItemsStmt->get_result();
-$orderItems = $orderItemsResult->num_rows > 0 ? $orderItemsResult->fetch_all(MYSQLI_ASSOC) : [];
+if ($order) {
+    $orderItems = $neworder->fetchOrderItems($order['id']);
+    $deliveryCost = 4.95;
+} else {
+    $total = 0;
+    foreach ($orderItems as $item) {
+        $total += $item['price'] * $item['quantity'];
+    }
+    $deliveryCost = 4.95;
+    $grandTotal = $total + $deliveryCost;
 
-// Calculate total price
-$total = 0;
-foreach ($orderItems as $item) {
-    $total += $item['price'] * $item['quantity'];
+    $orderId = $neworder->insertOrder($grandTotal);
+    $neworder->insertOrderItems($orderId, $orderItems);
 }
-$deliveryCost = 4.95;
-$grandTotal = $total + $deliveryCost;
 
 
 $incorrect = false;
@@ -94,14 +71,11 @@ if	($_SERVER['REQUEST_METHOD'] === 'POST' &&
                 $updateStatement->bind_param('ss', $new_password, $email);
                 $updateStatement->execute();
                 $updateStatement->close();
-                // echo 'Password changed!';
                 $changed = true;
             } else {
-                // echo 'New password and confirm password do not match!';
                 $doesntMatch = true;
             }
         } else {
-            // echo 'Current password is incorrect!';
             $incorrect = true;
         }
     }
@@ -110,7 +84,6 @@ if	($_SERVER['REQUEST_METHOD'] === 'POST' &&
     $orderStatement->bind_param('s', $email);
     $orderStatement->execute();
     $orderResult = $orderStatement->get_result();
-
 
 
 $email = $_SESSION['email'];
@@ -132,94 +105,97 @@ $conn->close();
 </head>
 <body>
     <div class="container">
-    <div class="account-info">
-        <h2>Account Information</h2>
-        <div class="account-details">
-            <p><strong>Name: </strong><?php echo ucfirst($user['name']); ?></p>
-            <p><strong>Email: </strong> <?php echo ucfirst($user['email']); ?></p>
-            <div class="coins">
-                <p><strong>BookBucks: </strong><?php echo ucfirst($user['book_bucks']); ?></p>
-                <img src="./images/bookbuck.svg" alt="">
+        <div class="account-info">
+            <h2>Account Information</h2>
+            <div class="account-details">
+                <p><strong>Name: </strong><?php echo ucfirst($user['name']); ?></p>
+                <p><strong>Email: </strong> <?php echo ucfirst($user['email']); ?></p>
+                <div class="coins">
+                    <p><strong>BookBucks: </strong><?php echo ucfirst($user['book_bucks']); ?></p>
+                    <img src="./images/bookbuck.svg" alt="">
+                </div>
+                <P class='usersince'>User since: <?php echo $user['created_at']; ?></P>
             </div>
-            <P class='usersince'>User since: <?php echo $user['created_at']; ?></P>
-        </div>
-    </div>
-    
-    <?php if($isAdmin): ?>
-        <div class="admin-panel">
-            <a href="addproduct.php">+ Add Product</a>
-        </div>
-    <?php endif; ?>
 
-        <div class="change-password">
-            <h2>Change Password</h2>
-            <?php if($changed): ?>
-                <p class="message success">Your password was changed successfully!</p>
-            <?php endif; ?>
-            <?php if($doesntMatch): ?>
-                <p class="message error">New password and confirmed password do not match!</p>
-            <?php endif; ?>
-            <?php if($incorrect): ?>
-                <p class="message error">Current password is incorrect!</p>
-            <?php endif; ?>
-            <form action="account.php" method="post">
-                <label for="current-password">Current Password:</label>
-                <input type="password" id="current-password" name="current_password" required>
-                <br>
-                <label for="new-password">New Password:</label>
-                <input type="password" id="new-password" name="new_password" required>
-                <br>
-                <label for="confirm-password">Confirm New Password:</label>
-                <input type="password" id="confirm-password" name="confirm_password" required>
-                <br>
-                <button type="submit">Change Password</button>
-            </form>
-        </div>
+            <?php if($isAdmin): ?>
+            <div class="admin-panel">
+                <a href="addproduct.php">+ Add Product</a>
+            </div>
+        <?php endif; ?>
 
+        </div>
+        
+            <div class="change-password">
+                <h2>Change Password</h2>
+                <?php if($changed): ?>
+                    <p class="message success">Your password was changed successfully!</p>
+                <?php endif; ?>
+                <?php if($doesntMatch): ?>
+                    <p class="message error">New password and confirmed password do not match!</p>
+                <?php endif; ?>
+                <?php if($incorrect): ?>
+                    <p class="message error">Current password is incorrect!</p>
+                <?php endif; ?>
+                <form action="account.php" method="post">
+                    <label for="current-password">Current Password:</label>
+                    <input type="password" id="current-password" name="current_password" required>
+                    <br>
+                    <label for="new-password">New Password:</label>
+                    <input type="password" id="new-password" name="new_password" required>
+                    <br>
+                    <label for="confirm-password">Confirm New Password:</label>
+                    <input type="password" id="confirm-password" name="confirm_password" required>
+                    <br>
+                    <button type="submit">Change Password</button>
+                </form>
+            </div>
         <div class="order-history">
-            <h2>Order History</h2>
-            <div class="products">
-        <?php if (!empty($order_items)): ?>
-            <?php foreach($order_items as $book): ?>
-                <div class="product-item">
-                    <a href="details.php?id=<?php echo $book['id']?>"><img src="<?php echo $book['image_URL']; ?>" alt="Book cover"></a>
-                    <div class="product-info">
-                        <div class="firstflex">
-                        <a class="product-title" href="details.php?id=<?php echo $book['id']?>"><h3><?php echo $book['title']; ?></h3></a>
-                            <div class="author">
-                                <?php
-                                // Controleer of de voornaam en achternaam beschikbaar zijn
-                                if (isset($book['first_name']) && isset($book['last_name'])) {
-                                    echo "by " . $book['first_name'] . " " . $book['last_name'];
-                                } else {
-                                    echo "Author unknown"; // fallback als auteur niet gevonden wordt
-                                }
-                                ?>
-                            </div>
-                            <div class="type"><?php echo $book['Type']; ?> | <?php echo $book['subgenre']; ?></div>
-                            <div class="description text">
-                                <?php echo $book['description']; ?>
-                                <a href="#" class="leesmeer">Lees meer</a>
-                            </div>
+                <h3 class="ordertitle">Order History</h3>
+                <?php if (!empty($orderItems)): ?>
+                    <?php
+                        $total = 0;
+                        foreach ($orderItems as $book):
+                            $bookTotal = $book['price'] * $book['quantity'];
+                            $total += $bookTotal;
+                    ?>
+                    <div class="column-book">
+                        <div class="column-book-cover">
+                            <a href="details.php?id=<?php echo $book['id']; ?>">
+                                <img src="<?php echo $book['image_URL']; ?>" alt="Book cover">
+                            </a>
                         </div>
-                        <div class="secondflex">
-                            <div class="price">€<?php echo number_format($book['price'], 2); ?></div>
-                            <div class="stars">★★★★★</div> 
-                            <div class="stock">
-                                <img class="check" src="./images/yes.png" alt=""> 
-                                <p><?php echo $book['stock']; ?> left</p>
-                            </div>
-                            <div class="add-to-cart"><a class="add" data-product-id="<?php echo $book['id']; ?>">Add to cart</a></div>
+                        <div class="column-book-details">
+                            <div class="book-details-flex">
+                                <div class="title-flex">
+                                    <h5><?php echo $book['title'];?></h5>
+                                </div>
 
+                                <p class="auteur"><?php echo $book['first_name'] . " " . $book['last_name']; ?></p>
+                                <div class="type"><?php echo $book['Type']; ?> | <?php echo $book['subgenre']; ?></div>
+                            </div>
+                            <div class="basket-amount">
+
+                                <div class="singleprice">
+                                    <p class="price"><?php echo $book['quantity']?> x €<?php echo $book['price']; ?></p>
+                                </div>
+
+                                <h3 class="total">Total: €<?php echo number_format($total + $deliveryCost, 2); ?></h3>
+                                <div class="bkcbks">
+                                    <img src="./images/bookbuck.svg" alt="" class="bookbucks">
+                                    <?php echo number_format($total + 4.95); ?>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
-                </div>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <p>No books found.</p>
-        <?php endif; ?>
-    </div>
-        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="empty-cart">
+                        No orders found.
+                    </div>
+                <?php endif; ?>
+            </div>
+
     </div>
 
     <footer>

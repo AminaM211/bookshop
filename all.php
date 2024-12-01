@@ -1,85 +1,39 @@
 <?php
 session_start();
-if($_SESSION['loggedin'] !== true){
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header('Location: login.php');
     exit();
 }
 
 include 'inc.nav.php';
 include 'cartpopup.php';
+include_once './classes/Db.php';
+include './classes/user.php';
+include './classes/Admin.php';
+include './classes/Book.php';
 
+// Maak databaseverbinding
+$db = new Database();
+$conn = $db->connect();
 
-// $conn = new mysqli('localhost', 'root', '', 'bookstore');
-$conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'railway', 11795);
-
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+// Haal de huidige gebruiker op
+$email = $_SESSION['email'];
+$user = new User($conn, $email);
+$userData = $user->getUserData();
 
 // admin check
-$email = $_SESSION['email'];
-$isAdmin = false;
-$adminStatement = $conn->prepare('SELECT * FROM users WHERE email = ?');
-$adminStatement->bind_param('s', $email);
-$adminStatement->execute();
-$adminResult = $adminStatement->get_result();
-$admin = $adminResult->fetch_assoc(); // Verkrijg de gebruiker
-if($admin['is_admin'] === 1){
-    $isAdmin = true;
-}
-
-
-$email = $_SESSION['email'];
-$userStatement = $conn->prepare('SELECT * FROM users WHERE email = ?');
-$userStatement->bind_param('s', $email);
-$userStatement->execute();
-$userResult = $userStatement->get_result();
-$user = $userResult->fetch_assoc(); // Verkrijg de gebruiker
+$admin = new Admin($conn);
+$isAdmin = $admin->isAdmin($email);
 
 // Genre selectie
 $genreFilter = isset($_GET['genre']) ? $_GET['genre'] : 'all';
 $typeFilter = isset($_GET['type']) ? $_GET['type'] : 'all';
 
-
-// Query boeken op basis van genre
-if ($genreFilter === 'all' && $typeFilter === 'all') {
-    $sql = "SELECT books.*, authors.first_name, authors.last_name 
-            FROM books 
-            LEFT JOIN authors ON books.author_id = authors.id
-            ORDER BY RAND()";
-} else {
-    $sql = "SELECT books.*, authors.first_name, authors.last_name 
-            FROM books 
-            LEFT JOIN authors ON books.author_id = authors.id 
-            WHERE 1=1";
-        
-    if ($genreFilter !== 'all') {
-        $sql .= " AND category_id = (SELECT id FROM categories WHERE name = ?)";
-    }
-    if ($typeFilter !== 'all') {
-        $sql .= " AND books.Type = ?";
-    }
-}
-
-$stmt = $conn->prepare($sql);
-
-if ($genreFilter !== 'all' && $typeFilter !== 'all') {
-    $stmt->bind_param('ss', $genreFilter, $typeFilter);  // Bind het geselecteerde genre en type
-} elseif ($genreFilter !== 'all') {
-    $stmt->bind_param('s', $genreFilter);
-} elseif ($typeFilter !== 'all') {
-    $stmt->bind_param('s', $typeFilter);
-}
+// books ophalen
+$bookObj = new Book($conn);
+$books = $bookObj->getBooks($genreFilter, $typeFilter);
 
 
-$stmt->execute();
-$result = $stmt->get_result();
-$books = $result->fetch_all(MYSQLI_ASSOC);
-// $authors = $result->fetch_all(MYSQLI_ASSOC);
-
-
-// Sluit de databaseverbinding
 $conn->close();
 ?>
 

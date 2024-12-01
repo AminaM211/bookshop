@@ -291,7 +291,7 @@ class Product {
 
     public function save($author_id)
     {
-        $conn = Db::getConnection();
+        $conn = $db->connect();
         $statement = $conn->prepare("INSERT INTO books (title, author_id, stock, type, subgenre, price, isbn, image_url, description, published_date, category_id, detailed_description) 
                                     VALUES (:title, :author_id, :stock,  :type, :subgenre, :price, :isbn, :image_url, :description, :published_date, :category_id, :detailed_description)");
 
@@ -311,12 +311,12 @@ class Product {
         $statement->execute();
     }
 
-    public static function getAll()
-    {
-        $conn = Db::getConnection();
-        $statement = $conn->query('SELECT * FROM products');
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
-    }
+    // public static function getAll()
+    // {
+    //     $conn = Db::getConnection();
+    //     $statement = $conn->query('SELECT * FROM products');
+    //     return $statement->fetchAll(PDO::FETCH_ASSOC);
+    // }
 
 }
 

@@ -13,12 +13,12 @@
 		$user = $result->fetch_assoc();
 
 		if (!$user) {
-			return false; // No user found with that email
+			return false; 
 		}
 		
 		$hash = $user['password'];
 		if(password_verify($p_password, $hash)){
-			return $user['id']; // Return user ID on successful login
+			return $user['id']; 
 		} else {
 			return false;
 		}
@@ -33,7 +33,7 @@
 			$_SESSION['loggedin'] = true;
 			$_SESSION['email'] = $email;
 			$_SESSION['name'] = $name;
-			$_SESSION['user_id'] = $result; // Store user ID in session
+			$_SESSION['user_id'] = $result;
 
 			header('Location: index.php');
 			exit();

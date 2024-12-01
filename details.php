@@ -5,35 +5,26 @@ if($_SESSION['loggedin'] !== true){
     exit();
 }
 
+include_once './classes/db.php';
 include 'inc.nav.php';
-include_once("bootstrap.php");
 include 'cartpopup.php';
+include './classes/user.php';
+include './classes/Admin.php';
 
-$conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'railway', 11795);
 
+// Maak databaseverbinding
+$db = new Database();
+$conn = $db->connect();
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+// Haal de huidige gebruiker op
+$email = $_SESSION['email'];
+$user = new User($conn, $email);
+$userData = $user->getUserData();
 
 // admin check
-$email = $_SESSION['email'];
-$isAdmin = false;
-$adminStatement = $conn->prepare('SELECT * FROM users WHERE email = ?');
-$adminStatement->bind_param('s', $email);
-$adminStatement->execute();
-$adminResult = $adminStatement->get_result();
-$admin = $adminResult->fetch_assoc(); // Verkrijg de gebruiker
-if($admin['is_admin'] === 1){
-    $isAdmin = true;
-}
+$admin = new Admin($conn);
+$isAdmin = $admin->isAdmin($email);
 
-$email = $_SESSION['email'];
-$userStatement = $conn->prepare('SELECT * FROM users WHERE email = ?');
-$userStatement->bind_param('s', $email);
-$userStatement->execute();
-$userResult = $userStatement->get_result();
-$user = $userResult->fetch_assoc(); // Verkrijg de gebruiker
 
 // Genre selectie
 $genreFilter = isset($_GET['genre']) ? $_GET['genre'] : 'all';
@@ -191,7 +182,7 @@ $conn->close();
                             <p>Auteur: </p>
                             <p class="author"><?php echo $author ? $author['first_name'] . " " . $author['last_name'] : 'Author unknown'; ?></p>
                         </div>
-                        <div class="uitgeverij flex">
+                        <div class="uitgeverij flex white">
                             <p>Publisher: </p>
                             <p>Gallery Books</p>
                         </div>  
@@ -227,11 +218,11 @@ $conn->close();
                 <img src="./images/stars.svg" alt="star">
                 <div class="write-review">
                     <img src="./images/write.svg" alt="write" class="writeimg">
-                    <a href="bookreview.php?book_id=<?php echo $book['id']; ?>">write a review</a>
+                    <a class="scroll-link" href="#gotoreview">write a review</a>
                 </div>
         </div>
 
-        <div class="review-form">
+        <div class="review-form" id="gotoreview">
             <h4>Write a review</h4>
             <p class="inf" ><span>*</span> Indicates a required field</p>
             <form action="bookreview.php" method="post">
@@ -295,5 +286,16 @@ $conn->close();
 
     <script src="./js/index.js"></script>
     <script src="./js/cart.js"></script>
+    <script>
+        document.querySelectorAll('.scroll-link').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+            });
+        });
+    </script>
 </body>
 </html>

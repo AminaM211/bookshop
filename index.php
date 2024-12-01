@@ -7,21 +7,18 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
 include 'inc.nav.php';
 include 'cartpopup.php';
+include_once './classes/db.php';
+include './classes/user.php';
+// include 'Book.php';
 
-$conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'railway', 11795);
+// Maak databaseverbinding
+$db = new Database();
+$conn = $db->connect();
 
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-
+// Haal de huidige gebruiker op
 $email = $_SESSION['email'];
-$userStatement = $conn->prepare('SELECT * FROM users WHERE email = ?');
-$userStatement->bind_param('s', $email);
-$userStatement->execute();
-$userResult = $userStatement->get_result();
-$user = $userResult->fetch_assoc(); // Verkrijg de gebruiker
+$user = new User($conn, $email);
+$userData = $user->getUserData();
 
 // Genre selectie
 $genreFilter = isset($_GET['genre']) ? $_GET['genre'] : 'all';
@@ -42,10 +39,8 @@ if ($genreFilter !== 'all') {
 $stmt->execute();
 $result = $stmt->get_result();
 $books = $result->fetch_all(MYSQLI_ASSOC);
-// $authors = $result->fetch_all(MYSQLI_ASSOC);
 
 
-// Sluit de databaseverbinding
 $conn->close();
 ?>
 

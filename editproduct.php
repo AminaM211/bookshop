@@ -5,25 +5,23 @@ if ($_SESSION['loggedin'] !== true) {
     exit();
 }
 
+include_once './classes/db.php';
 include 'inc.nav.php';
-include_once 'classes/Products.php';
+include_once './classes/Products.php';
+include './classes/user.php';
+include './classes/Admin.php';
 
-$conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'railway', 11795);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+$db = new Database();
+$conn = $db->connect();
 
-// Admin check
+// Haal de huidige gebruiker op
 $email = $_SESSION['email'];
-$isAdmin = false;
-$adminStatement = $conn->prepare('SELECT * FROM users WHERE email = ?');
-$adminStatement->bind_param('s', $email);
-$adminStatement->execute();
-$adminResult = $adminStatement->get_result();
-$admin = $adminResult->fetch_assoc();
-if ($admin && $admin['is_admin'] === 1) {
-    $isAdmin = true;
-}
+$user = new User($conn, $email);
+$userData = $user->getUserData();
+
+// admin check
+$admin = new Admin($conn);
+$isAdmin = $admin->isAdmin($email);
 
 // Initialize product data
 $product_id = $_GET['id'] ?? null;

@@ -1,16 +1,18 @@
-<?php 
+<?php
+class Database {
+    private $host = 'junction.proxy.rlwy.net';
+    private $user = 'root';
+    private $pass = 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB';
+    private $dbname = 'railway';
+    private $port = 11795;
+    public $conn;
 
-    class Db {
-        private static $conn = null;
-
-        public static function getConnection(){
-            //aanroepen met Db::getConnection();
-            if( self::$conn == null){
-                self::$conn = new PDO ('mysql:host=localhost;dbname=bookstore', 'root', '');
-                return self::$conn;
-            }
-            else {
-                return self::$conn;
-            }
+    public function connect() {
+        $this->conn = new mysqli($this->host, $this->user, $this->pass, $this->dbname, $this->port);
+        if ($this->conn->connect_error) {
+            die("Connection failed: " . $this->conn->connect_error);
         }
+        return $this->conn;
     }
+}
+?>

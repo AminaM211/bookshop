@@ -5,30 +5,41 @@ if ($_SESSION['loggedin'] !== true) {
     exit();
 }
 
-$conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'railway', 11795);
+include 'inc.tinynav.php';
+include_once './classes/db.php';
+include './classes/user.php';
+include './classes/Order.php';
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// Maak databaseverbinding
+$db = new Database();
+$conn = $db->connect();
+
+// Haal de huidige gebruiker op
+$userId = $_SESSION['user_id'];
+$email = $_SESSION['email'];
+$user = new User($conn, $email);
+$userData = $user->getUserData();
+
+// Maak een Order-object aan
+$neworder = new Order($conn, $userId);
+
+// Haal de laatste bestelling op
+$order = $neworder->fetchLastOrder();
+
+if ($order) {
+    $orderItems = $neworder->fetchOrderItems($order['id']);
+    $deliveryCost = 4.95;
+} else {
+    $total = 0;
+    foreach ($orderItems as $item) {
+        $total += $item['price'] * $item['quantity'];
+    }
+    $deliveryCost = 4.95;
+    $grandTotal = $total + $deliveryCost;
+
+    $orderId = $neworder->insertOrder($grandTotal);
+    $neworder->insertOrderItems($orderId, $orderItems);
 }
-
-$userId = $_SESSION['user_id']; // Ensure user ID is in session
-$sql = "SELECT books.*, cart.quantity, authors.first_name, authors.last_name FROM books
-        INNER JOIN cart ON books.id = cart.book_id
-        INNER JOIN authors ON books.author_id = authors.id
-        WHERE cart.user_id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$result = $stmt->get_result();
-$cartBooks = $result->fetch_all(MYSQLI_ASSOC);
-
-// Calculate total price
-$total = 0;
-foreach ($cartBooks as $item) {
-    $total += $item['price'] * $item['quantity'];
-}
-$deliveryCost = 4.95;
-$grandTotal = $total + $deliveryCost;
 
 // Checkout form submission logic
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -70,7 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 
-
 $conn->close();
 ?>
 
@@ -83,7 +93,6 @@ $conn->close();
     <link rel="stylesheet" href="./css/checkout.css">
 </head>
 <body>
-    <?php include 'inc.nav.php'; ?>
     <div class="checkout-container">
         <h1>Checkout</h1>
         <form method="POST" class="checkout-form">
@@ -107,10 +116,10 @@ $conn->close();
                 <h2>My orders</h2>
                     <?php
                         $total = 0;
-                        foreach ($cartBooks as $book):
+                        foreach ($orderItems as $book):
                             $bookTotal = $book['price'] * $book['quantity'];
                             $total += $bookTotal;
-                        ?>
+                    ?>
                         <div class="column-book">
                             <div class="column-book-cover">
                                     <img src="<?php echo $book['image_URL']; ?>" alt="Book cover">

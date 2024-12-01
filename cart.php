@@ -6,79 +6,35 @@ if ($_SESSION['loggedin'] !== true) {
 }
 
 include 'inc.nav.php';
+include_once './classes/db.php';
+include './classes/user.php';
+include './classes/Cartbooks.php'; // Include the new Cart class
 
-// $conn = new mysqli('localhost', 'root', '', 'bookstore');
-$conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'railway', 11795);
+// Create a database connection
+$db = new Database();
+$conn = $db->connect();
 
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Ophalen van auteurs
-$authorsStatement = $conn->prepare('SELECT id, CONCAT(first_name, " ", last_name) AS full_name FROM authors');
-$authorsStatement->execute();
-$authorsResult = $authorsStatement->get_result();
-$authors = $authorsResult->fetch_all(MYSQLI_ASSOC);
-
-$userId = $_SESSION['user_id']; // Ensure user ID is in session
-$sql = "SELECT books.*, cart.quantity, authors.first_name, authors.last_name FROM books
-        INNER JOIN cart ON books.id = cart.book_id
-        INNER JOIN authors ON books.author_id = authors.id
-        WHERE cart.user_id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$result = $stmt->get_result();
-$cartBooks = $result->fetch_all(MYSQLI_ASSOC);
-
-// Get user info
+// Get the current user
 $email = $_SESSION['email'];
-$userStatement = $conn->prepare('SELECT * FROM users WHERE email = ?');
-$userStatement->bind_param('s', $email);
-$userStatement->execute();
-$userResult = $userStatement->get_result();
-$user = $userResult->fetch_assoc();
+$user = new User($conn, $email);
+$userData = $user->getUserData();
 
-// when adding another book to cart, check if the book is already in the cart, if so, increase quantity
+$userId = $_SESSION['user_id']; 
+$cart = new Cartbooks($conn, $userId); // Create an instance of Cart class
 
-
-// update quantity met - 1 + 
+// Handle POST requests for quantity updates
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $bookId = $_POST['book_id'];
     $action = $_POST['action'];
-
-    if ($action === 'increase') {
-        // Increase quantity by 1
-        $stmt = $conn->prepare("UPDATE cart 
-                                SET quantity = quantity + 1
-                                WHERE user_id = ? AND book_id = ?");
-        $stmt->bind_param('ii', $userId, $bookId);
-        $stmt->execute();
-    } elseif ($action === 'decrease') {
-        // Decrease quantity by 1, but not below 1
-        $stmt = $conn->prepare("UPDATE cart 
-                                SET quantity = quantity - 1
-                                WHERE user_id = ? AND book_id = ?");
-        $stmt->bind_param('ii', $userId, $bookId);
-        $stmt->execute();
-
-        // If quantity becomes 1 and action is decrease, delete the item from the cart
-        $stmt = $conn->prepare("DELETE FROM cart WHERE user_id = ? AND book_id = ? AND quantity = 0");
-        $stmt->bind_param('ii', $userId, $bookId);
-        $stmt->execute();
-    }
-
-    // Refresh the page to reflect the changes
-    echo "<meta http-equiv='refresh' content='0'>";
+    $cart->updateQuantity($bookId, $action); // Use the Cart class method
+    echo "<meta http-equiv='refresh' content='0'>"; // Refresh to update the cart
     exit();
 }
 
-
+// Get the user's cart items
+$cartBooks = $cart->getCartBooks();
 $conn->close();
-?>
-
-<!DOCTYPE html>
+?><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">

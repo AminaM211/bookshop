@@ -6,30 +6,22 @@ if($_SESSION['loggedin'] !== true ){
 }
 
 include 'inc.nav.php';
-include_once 'classes/Products.php';
+include_once './classes/Db.php';
+include './classes/user.php';
+include './classes/Admin.php';
 
+// Maak databaseverbinding
+$db = new Database();
+$conn = $db->connect();
 
-// $conn = new mysqli('localhost', 'root', '', 'bookstore');
-$conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'railway', 11795);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+// Haal de huidige gebruiker op
+$email = $_SESSION['email'];
+$user = new User($conn, $email);
+$userData = $user->getUserData();
 
 // admin check
-$email = $_SESSION['email'];
-$isAdmin = false;
-$adminStatement = $conn->prepare('SELECT * FROM users WHERE email = ?');
-$adminStatement->bind_param('s', $email);
-$adminStatement->execute();
-$adminResult = $adminStatement->get_result();
-$admin = $adminResult->fetch_assoc(); // Verkrijg de gebruiker
-if($admin['is_admin'] === 1){
-    $isAdmin = true;
-} else {
-    $isAdmin = false;
-}
-
+$admin = new Admin($conn);
+$isAdmin = $admin->isAdmin($email);
 
 // Ophalen van auteurs
 $authorsStatement = $conn->prepare('SELECT id, CONCAT(first_name, " ", last_name) AS full_name FROM authors');

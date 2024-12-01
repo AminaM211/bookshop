@@ -4,11 +4,9 @@ if($_SESSION['loggedin'] !== true){
     exit();
 }
 
-$conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'railway', 11795);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+include_once './classes/db.php';
+$db = new Database();
+$conn = $db->connect();
 
 $email = $_SESSION['email'];
 $userStatement = $conn->prepare('SELECT * FROM users WHERE email = ?');

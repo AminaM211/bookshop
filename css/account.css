@@ -12,7 +12,10 @@ body {
 }
 
 .container {
-    margin: 50px 50px;
+    margin: 100px 100px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
 }
 
 header {
@@ -51,6 +54,10 @@ header nav {
     
 }
 
+.account-info {
+    margin-bottom: 20px;
+}
+
 .account-details h1 {
     margin-bottom: 20px;
 }
@@ -59,9 +66,12 @@ header nav {
     margin-bottom: 10px;
 }
 
+.change-password {
+    grid-column: 2/3;
+}
 
 .change-password form{
-    margin-top: 20px;
+    margin: 20px 0;
 }
 
 .change-password input {
@@ -97,18 +107,7 @@ header nav {
 
 .usersince {
     margin: 15px 0;
-    border: 1px solid #c9c9c9;
-    padding: 10px;
     font-style: italic;
-}
-
-.usersince:hover {
-    background-image: url(../images/party.jpg);
-    background-size: 140%;
-    background-repeat: no-repeat;
-    background-position: bottom;
-    font-weight: bold;
-    color: #fff;
 }
 
 .error {
@@ -119,28 +118,6 @@ header nav {
 .success {
     margin-top: 20px;
     color: #00be00;
-}
-
-.container {
-    display: flex;
-    flex-direction: row;
-    margin-left: 15%;
-    margin-right: 15%;
-    gap: 50px;
-    justify-content: space-between;
-}
-
-@media (max-width: 768px) {
-    .container {
-        display: flex;
-        flex-direction: column;
-        gap: 25%; 
-        margin-left: 60px;
-        margin-right: 60px;
-    }
-    .change-password {
-        margin-top: 20px;
-    }
 }
 
 /* ________________________admin_________________________ */
@@ -161,4 +138,147 @@ header nav {
 
 .admin-panel:hover {
     background-color: #ff5722;
+}
+
+
+/* ________________________order history_________________________ */
+
+.order-history {
+    margin-top: 20px;
+}
+
+
+.book-info {
+    margin-left: 15px;
+}
+
+.book-info h3 {
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+
+.price {
+    color: #ff5722;
+    font-weight: bold;
+}
+
+/* Genres */
+.genres {
+    margin: 40px;
+}
+
+.genre-list {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.genre-list a {
+    width: 200px;
+    height: 120px;
+    color: white;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.3s;
+}
+
+.genre-list a:hover {
+    transform: scale(1.05);
+}
+
+/* _____________________BESTSELLERS_________________________ */
+
+.ordertitle{
+  margin-bottom: 15px;
+}
+
+.order-history{
+    grid-column: 1 / -1;
+}
+
+.column-book {
+    display: flex;
+    flex-direction: row;
+    background-color: white;
+    border-radius: 5px;
+    padding: 15px;
+    width: 40vw;
+    gap: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    align-items: center;
+    transition: transform 0.3s;
+}
+
+.column-book img {
+    width: 50px;
+    /* height: 170px; */
+    border-radius: 5px;
+}
+
+.column-book h5 {
+    font-size: 1em;
+    margin-bottom: 5px;
+    font-weight: 200;
+}
+
+.auteur {
+    color: #555;
+    font-size: 0.8em;
+    margin-bottom: 5px;
+}
+
+.price {
+    color: #ff5722;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.total {
+    font-size: 0.9em;
+    margin: 5px 0;
+}
+
+.type {
+    font-size: 0.7em;
+    color: #7e7e7e;
+    margin-bottom: 1em;
+}
+
+.bkcbks {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-weight: 100;
+}
+
+.bkcbks img {
+    width: 25px;
+    height: 25px;
+}
+
+.basket-amount h3 {
+    font-weight: 100;
+    text-decoration: line-through;
+}
+
+.column-book-details {
+    display: flex;
+    flex-direction: row;
+    width: 70%;
+    justify-content: space-between;
+}
+
+/* media queries */
+@media (max-width: 860px) {
+    .container {
+        display: block;
+        margin: 50px 50px;
+
+    }
 }
