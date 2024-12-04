@@ -13,9 +13,12 @@ body {
 
 .container {
     margin: 100px 100px;
+}
+
+.container-flex {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+    /* width: 90vw; */
 }
 
 header {
@@ -81,7 +84,7 @@ header nav {
 }
 
 .change-password button[type="submit"] {
-    width: 100%;
+    width: 200px;
     padding: 13px;
     margin: 10px 0;
     background-color: #333333;
@@ -124,6 +127,7 @@ header nav {
 
 .admin-panel {
     margin-top: 10px;
+    margin-bottom: 20px;
     background-color: #1d1d1d;
     display: inline-block;
     padding: 5px 10px;
@@ -208,11 +212,12 @@ header nav {
     background-color: white;
     border-radius: 5px;
     padding: 15px;
-    width: 40vw;
+    width: 60vw;
     gap: 30px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     align-items: center;
     transition: transform 0.3s;
+    margin-bottom: 20px;
 }
 
 .column-book img {
@@ -276,9 +281,8 @@ header nav {
 
 /* media queries */
 @media (max-width: 860px) {
-    .container {
+    .container-flex {
+        /* flex-direction: column; */
         display: block;
-        margin: 50px 50px;
-
     }
 }

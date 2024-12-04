@@ -107,18 +107,22 @@ body {
     margin-top: 30px;
 }
 
+h1 {
+    margin-bottom: 8px !important;
+}
+
 .book-details-info {
     width: 80vw;
 }
 
 .book-details-info .auteur {
     font-size: 1.2em;
-    margin-top: 0.6em;
+    margin-top: 0.3em;
 }
 
 .book-details-info .subgenre {
     font-size: 1em;
-    margin-top: 0.6em;
+    /* margin-top: 0.6em; */
     color: gray;
 }
 
@@ -128,6 +132,10 @@ body {
     padding: 20px 0;
     margin-top: 20px;
 }
+
+/* .add-to-cart {
+    width: 250px;
+} */
 
 .add-to-cart img {
     width: 20px;
@@ -238,6 +246,10 @@ h4 {
     padding: 5px 5px;
 }
 
+.uitgeverij p {
+    margin: 0 10px 0 5px;  
+}
+
 .author-info-image img {
     width: 120px;
     height: 120px;
@@ -332,7 +344,21 @@ h4 {
 }
 
 .review-form input, textarea {
-    width: 60vw;
+    width: 40vw;
+}
+
+.review-form .post {
+    width: 40vw;
+}
+
+@media (max-width: 600x) {
+    .review-form input, textarea {
+        width: 40vw;
+    }
+    
+    .review-form .post {
+        width: 40vw;
+    }
 }
 
 input  {
@@ -645,76 +671,8 @@ h3 {
     text-decoration: none;
 }
 
-/* _______________________CATEGORIES______________________ */
-
-#categories {
-    display: flex;
-    justify-content: center;
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 0px;
-    margin: 0;
-    padding-left: 10%;
-    padding-right: 10%;
-    background-color: #FCF6F2;
-    width: 100%;
-}
-
-#categories a {
-    color: #1d1d1d;
-    text-decoration: none;
-    font-size: 1em;
-    font-weight: bold;
-    padding: 10px 0px;
-    border-radius: 5px;
-    transition: background-color 0.1s, color 0.2s;
-}
-
-#categories a:hover {
-    color: #ff5722;
-}
-
-/* #categories a:visited {
-    color: #ff5722;
-} */
-
-#categories a:active {
-    color: #1d1d1d;
-}
-
-.product-info a {
-    color: #333;
-    text-decoration: none;
-}
-
-.product-info a {
-    color: #333;
-    text-decoration: none;
-}
-
-.author-info-details p {
-    font-size: 0.9em;
-}
-
-
-/* _________________HAMBURGER____________________ */
-
-.checkbtn {
-    display: none;
-    color: white;
-    cursor: pointer;
-}
-
-.checkbtn img {
-    width: 35px;
-}
-
-#popup {
-    display: none;
-   }
-
-#check {
-    display: none;
+.reviews-list {
+    margin: 40px 0;
 }
 
 /* ________________________FILTER________________________ */    
@@ -771,7 +729,6 @@ h3 {
 .filters button:hover {
     background-color: #ff8a50;
 }
-
 
 
 /* ____________________MEDIA QUERIES______________________ */
@@ -837,54 +794,6 @@ h3 {
 }
 
 @media (max-width: 600px) {
-        #categories {
-            display: none;
-        }
-        #popup a:hover{
-            border: rgba(255, 0, 0, 0.5) 1px solid;
-            scale: 1.1;
-        }
-    
-        .checkbtn {
-            display: block;
-            font-size: 5rem;
-            position: absolute;
-            top: 102px;
-            left: 36px;
-        }
-    
-        #popup {
-            display: none;
-            justify-content: center;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            gap: 15px;
-            text-align: center;
-            margin: 10px 0;
-            padding-left: 10%;
-            padding-right: 10%;
-            background-color: #FCF6F2;
-            width: 100%;
-        }
-    
-        #check:checked ~ #popup {
-            display: flex;
-           }
-        
-        #popup a {
-            color: #1d1d1d;
-            text-decoration: none;
-            font-size: 1em;
-            font-weight: bold;
-            padding: 10px 0px;
-            border-radius: 5px;
-            transition: background-color 0.1s, color 0.2s;
-        }
-        
-        #popup a:hover {
-            color: #ff5722;
-        }
 
         .review-form input, textarea {
             width: 100%;
@@ -893,7 +802,6 @@ h3 {
         .post {
             width: 100%;
         }
-
         
         .book-details {
             margin-right: 40px;
@@ -930,17 +838,5 @@ h3 {
     .secondflex {
         margin-right: 0;
         /* margin-left: 0.3em; */
-    }
-}
-
-@media (max-width: 460px) {
-    .checkbtn {
-        top: 150px;
-    }
-}
-
-@media (max-width: 378px) {
-    .checkbtn {
-        top: 163px;
     }
 }

@@ -12,43 +12,6 @@ body {
     padding: 0;
 }
 
-/* _______________________CATEGORIES______________________ */
-
-#categories {
-    display: flex;
-    justify-content: center;
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 0px;
-    margin: 0;
-    padding-left: 10%;
-    padding-right: 10%;
-    background-color: #FCF6F2;
-    width: 100%;
-}
-
-#categories a {
-    color: #1d1d1d;
-    text-decoration: none;
-    font-size: 1em;
-    font-weight: bold;
-    padding: 10px 0px;
-    border-radius: 5px;
-    transition: background-color 0.1s, color 0.2s;
-}
-
-#categories a:hover {
-    color: #ff5722;
-}
-
-/* #categories a:visited {
-    color: #ff5722;
-} */
-
-#categories a:active {
-    color: #1d1d1d;
-}
-
 .product-info a {
     color: #333;
     text-decoration: none;
@@ -314,30 +277,6 @@ body {
     height: 17px;
 }
 
-.leesmeer {
-    display: none;
-}
-
-/* _________________HAMBURGER____________________ */
-
-.checkbtn {
-    display: none;
-    color: white;
-    cursor: pointer;
-}
-
-.checkbtn img {
-    width: 35px;
-}
-
-#popup {
-    display: none;
-   }
-
-#check {
-    display: none;
-}
-
 /* ________________________FILTER________________________ */    
 
 .filters {
@@ -411,13 +350,6 @@ body {
         -ms-line-clamp: 5;
         line-clamp: 5; 
 }
-
-.leesmeer {
-    display: block;
-    color: #ff5722;
-    font-size: 0.8em;
-    cursor: pointer;
-    margin-top: 10px;}
 }
 
 @media (max-width: 850px) {
@@ -426,57 +358,6 @@ body {
     }
 }
 
-@media (max-width: 600px) {
-        #categories {
-            display: none;
-        }
-        #popup a:hover{
-            border: rgba(255, 0, 0, 0.5) 1px solid;
-            scale: 1.1;
-        }
-    
-        .checkbtn {
-            display: block;
-            font-size: 5rem;
-            position: absolute;
-            top: 102px;
-            left: 36px;
-        }
-    
-        #popup {
-            display: none;
-            justify-content: center;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            gap: 15px;
-            text-align: center;
-            margin: 10px 0 10px 0;
-            padding-left: 10%;
-            padding-right: 10%;
-            background-color: #FCF6F2;
-            width: 100%;
-        }
-    
-        #check:checked ~ #popup {
-            display: flex;
-           }
-        
-        #popup a {
-            color: #1d1d1d;
-            text-decoration: none;
-            font-size: 1em;
-            font-weight: bold;
-            padding: 10px 0px;
-            border-radius: 5px;
-            transition: background-color 0.1s, color 0.2s;
-        }
-        
-        #popup a:hover {
-            color: #ff5722;
-        }
-
-}
 
 @media (max-width: 425px) {
     .secondflex .stock,
@@ -495,17 +376,5 @@ body {
     .secondflex {
         margin-right: 0;
         margin-left: 0.3em;
-    }
-}
-
-@media (max-width: 460px) {
-    .checkbtn {
-        top: 150px;
-    }
-}
-
-@media (max-width: 378px) {
-    .checkbtn {
-        top: 163px;
     }
 }

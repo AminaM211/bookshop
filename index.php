@@ -5,11 +5,9 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit();
 }
 
-include 'inc.nav.php';
 include 'cartpopup.php';
 include_once './classes/db.php';
-include './classes/user.php';
-// include 'Book.php';
+include './classes/Book.php';
 
 // Maak databaseverbinding
 $db = new Database();
@@ -17,28 +15,13 @@ $conn = $db->connect();
 
 // Haal de huidige gebruiker op
 $email = $_SESSION['email'];
-$user = new User($conn, $email);
-$userData = $user->getUserData();
 
 // Genre selectie
 $genreFilter = isset($_GET['genre']) ? $_GET['genre'] : 'all';
 
-// alleen romance boeken
-$sql = "SELECT books.*, authors.first_name, authors.last_name 
-        FROM books 
-        LEFT JOIN authors ON books.author_id = authors.id 
-        WHERE category_id = (SELECT id FROM categories WHERE name = 'romance')
-        LIMIT 6";
-
-$stmt = $conn->prepare($sql);
-
-if ($genreFilter !== 'all') {
-    $stmt->bind_param('s', $genreFilter);  // Bind het geselecteerde genre
-}
-
-$stmt->execute();
-$result = $stmt->get_result();
-$books = $result->fetch_all(MYSQLI_ASSOC);
+// books ophalen
+$bookObj = new Book($conn);
+$books = $bookObj->getBooksByGenre('romance', 6);
 
 
 $conn->close();
@@ -54,28 +37,7 @@ $conn->close();
     <link rel="stylesheet" href="./css/inc.footer.css">
 </head>
 <body>
-
-    <nav>
-        <input type="checkbox" id="check">
-        <label for="check" class="checkbtn">
-            <i><img src="./images/menu.svg" alt=""></i>
-        </label>
-        <div id="popup" class="filters">
-            <a href="all.php?genre=all" class="filter-btn <?php echo ($genreFilter === 'all') ? 'active' : ''; ?>">All</a>
-            <a href="all.php?genre=fiction" class="filter-btn <?php echo ($genreFilter === 'fiction') ? 'active' : ''; ?>">Fiction</a>
-            <a href="all.php?genre=nonfiction" class="filter-btn <?php echo ($genreFilter === 'nonfiction') ? 'active' : ''; ?>">Non-Fiction</a>
-            <a href="all.php?genre=romance" class="filter-btn <?php echo ($genreFilter === 'romance') ? 'active' : ''; ?>">Romance</a>
-            <a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?>">Thriller</a>
-        </div>
-    </nav>
-
-    <div id="categories" class="filters">
-            <a href="all.php?genre=all" class="filter-btn <?php echo ($genreFilter === 'all') ? 'active' : ''; ?>">All</a>
-            <a href="all.php?genre=fiction" class="filter-btn <?php echo ($genreFilter === 'fiction') ? 'active' : ''; ?>">Fiction</a>
-            <a href="all.php?genre=nonfiction" class="filter-btn <?php echo ($genreFilter === 'nonfiction') ? 'active' : ''; ?>">Non-Fiction</a>
-            <a href="all.php?genre=romance" class="filter-btn <?php echo ($genreFilter === 'romance') ? 'active' : ''; ?>">Romance</a>
-            <a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?>">Thriller</a>
-        </div>
+    <?php include 'inc.nav.php'; ?>
 
     <section class="banner">
         <h1>Discover Your Next Great Read</h1>

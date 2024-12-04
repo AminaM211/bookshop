@@ -11,7 +11,7 @@ body {
     color: #333;
 }
 
-.checkout-container {
+.container {
     width: 80%;
     margin: 50px auto;
     background: #fff;
@@ -47,7 +47,10 @@ h1 {
     width: 25px;
 }
 
-
+.singleprice p{
+    padding-bottom: 5px;
+    font-size: 0.9em;
+}
 
 
 .checkout-items {
@@ -189,9 +192,9 @@ text-decoration: line-through;
 }
 
 .column-book-details .basket-amount {
-    display: flex;
+    /* display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: center; */
     margin-top: 10px;
 }
 
@@ -212,3 +215,57 @@ text-decoration: line-through;
     font-size: 18px;
 }
 
+.totalwithoutbb {
+    font-weight: 600 !important;
+    text-decoration: none !important;
+}
+
+.bookbucks {
+    font-weight: 600;
+}
+
+.checkout-flex {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.checkout-container {
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
+}
+
+.checkout-container-flex-one {
+    margin-top: 10px;
+    width: 50%;
+}
+
+.checkout-container-flex-two {
+    width: 50%;
+}
+
+@media screen and (max-width: 920px) {
+    .checkout-container {
+        display: flex;
+        flex-direction: column;
+    }
+    .checkout-container-flex-one {
+        margin-top: 0px;
+        width: 100%;
+    }
+    
+    .checkout-container-flex-two {
+        width: 100%;
+    }
+    .column-book-details .basket-amount {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+    }
+    .singleprice p{
+        padding-bottom: 0px;
+        font-size: 1em;
+    }
+}

@@ -5,10 +5,8 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit();
 }
 
-include 'inc.nav.php';
 include 'cartpopup.php';
 include_once './classes/Db.php';
-include './classes/user.php';
 include './classes/Admin.php';
 include './classes/Book.php';
 
@@ -18,21 +16,18 @@ $conn = $db->connect();
 
 // Haal de huidige gebruiker op
 $email = $_SESSION['email'];
-$user = new User($conn, $email);
-$userData = $user->getUserData();
 
 // admin check
 $admin = new Admin($conn);
 $isAdmin = $admin->isAdmin($email);
 
-// Genre selectie
+// // Genre selectie
 $genreFilter = isset($_GET['genre']) ? $_GET['genre'] : 'all';
 $typeFilter = isset($_GET['type']) ? $_GET['type'] : 'all';
 
 // books ophalen
 $bookObj = new Book($conn);
 $books = $bookObj->getBooks($genreFilter, $typeFilter);
-
 
 $conn->close();
 ?>
@@ -46,46 +41,24 @@ $conn->close();
     <link rel="stylesheet" href="./css/all.css">
 </head>
 <body>
-    <nav>
-        <input type="checkbox" id="check">
-        <label for="check" class="checkbtn">
-            <i><img src="./images/menu.svg" alt=""></i>
-        </label>
-        <div id="popup" class="filters">
-            <a href="all.php?genre=all" class="filter-btn <?php echo ($genreFilter === 'all') ? 'active' : ''; ?>">All</a>
-            <a href="all.php?genre=fiction" class="filter-btn <?php echo ($genreFilter === 'fiction') ? 'active' : ''; ?>">Fiction</a>
-            <a href="all.php?genre=nonfiction" class="filter-btn <?php echo ($genreFilter === 'nonfiction') ? 'active' : ''; ?>">Non-Fiction</a>
-            <a href="all.php?genre=romance" class="filter-btn <?php echo ($genreFilter === 'romance') ? 'active' : ''; ?>">Romance</a>
-            <a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?>">Thriller</a>
-        </div>
-    </nav>
+    <?php include 'inc.nav.php'; ?>
     
-
-    <div id="categories">
-        <a href="all.php?genre=all" class="filter-btn <?php echo ($genreFilter === 'all') ? 'active' : ''; ?>">All</a>
-        <a href="all.php?genre=fiction" class="filter-btn <?php echo ($genreFilter === 'fiction') ? 'active' : ''; ?>">Fiction</a>
-        <a href="all.php?genre=nonfiction" class="filter-btn <?php echo ($genreFilter === 'nonfiction') ? 'active' : ''; ?>">Non-Fiction</a>
-        <a href="all.php?genre=romance" class="filter-btn <?php echo ($genreFilter === 'romance') ? 'active' : ''; ?>">Romance</a>
-        <a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?>">Thriller</a>
-    </div>
-
     <div class="product-container">
-    <div class="section-header">
-        <h2><?php echo ucfirst($genreFilter); ?> Books</h2>
-    </div>
+        <div class="section-header">
+            <h2><?php echo ucfirst($genreFilter); ?> Books</h2>
+        </div>
 
-
-    <div class="filters">
-        <form method="GET" action="all.php">
-            <!-- <label class="filter-title" for="type"></label> -->
-            <select name="type" id="type">
-                <option value="all" <?php echo ($typeFilter === 'all') ? 'selected' : ''; ?>>All</option>
-                <option value="hardcover" <?php echo ($typeFilter === 'hardcover') ? 'selected' : ''; ?>>Hardcover</option>
-                <option value="paperback" <?php echo ($typeFilter === 'paperback') ? 'selected' : ''; ?>>Paperback</option>
-                <option value="box set" <?php echo ($typeFilter === 'boxset') ? 'selected' : ''; ?>>Boxset</option>
-            </select>
-        </form>
-    </div>
+        <div class="filters">
+            <form method="GET" action="all.php">
+                <!-- <label class="filter-title" for="type"></label> -->
+                <select name="type" id="type">
+                    <option value="all" <?php echo ($typeFilter === 'all') ? 'selected' : ''; ?>>All</option>
+                    <option value="hardcover" <?php echo ($typeFilter === 'hardcover') ? 'selected' : ''; ?>>Hardcover</option>
+                    <option value="paperback" <?php echo ($typeFilter === 'paperback') ? 'selected' : ''; ?>>Paperback</option>
+                    <option value="box set" <?php echo ($typeFilter === 'boxset') ? 'selected' : ''; ?>>Boxset</option>
+                </select>
+            </form>
+        </div>
     </div>
 
     <?php if($isAdmin): ?>

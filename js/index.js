@@ -1,13 +1,3 @@
-//PREVENT DEFAULT ON ANCHOR TAGS
-// document.querySelectorAll('a').forEach(anchor => {
-//   anchor.addEventListener('click', function(e) {
-//     if (this.getAttribute('href') === '#') {
-//       e.preventDefault();
-//     }
-//   });
-// });
-
-
 document.getElementById('check').addEventListener('change', function() {
     var menuIcon = document.querySelector('.checkbtn img');
     if (this.checked) {

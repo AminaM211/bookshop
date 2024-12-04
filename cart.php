@@ -8,7 +8,7 @@ if ($_SESSION['loggedin'] !== true) {
 include 'inc.nav.php';
 include_once './classes/db.php';
 include './classes/user.php';
-include './classes/Cartbooks.php'; // Include the new Cart class
+include './classes/Cartbooks.php';
 
 // Create a database connection
 $db = new Database();
@@ -20,7 +20,10 @@ $user = new User($conn, $email);
 $userData = $user->getUserData();
 
 $userId = $_SESSION['user_id']; 
-$cart = new Cartbooks($conn, $userId); // Create an instance of Cart class
+$cart = new Cartbooks($conn, $userId); 
+
+// Haal book_bucks op voor de ingelogde gebruiker
+$bookBucks = $user->getBookBucks();
 
 // Handle POST requests for quantity updates
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -132,13 +135,21 @@ $conn->close();
                         <div class="cart-total">
                             <p>Total</p>
                             <div class="cart-total-price-options">
-                                    <p class="price">incl. btw &nbsp;&nbsp; €<?php echo number_format($total + 4.95, 2); ?></p>
-                                    <p class="bkcbks"><img src="./images/bookbuck.svg" alt="" class="bookbucks"><?php echo number_format($total + 4.95); ?></p>
+                                <?php if ($bookBucks > ($total + 4.95)): ?>
+                                    <p class="price" id="line">incl. btw &nbsp;&nbsp; €<?php echo number_format($total + 4.95, 2); ?></p>
+                                    <p class="bkcbks">
+                                        <img src="./images/bookbuck.svg" alt="" class="bookbucks">
+                                        <?php echo number_format($total + 4.95); ?>
+                                    </p>
+                                <?php else: ?>
+                                    <p class="totalwithoutbb">incl. btw &nbsp;&nbsp; €<?php echo number_format($total + 4.95, 2); ?></p>
+                                <?php endif; ?>
                             </div>
                         </div>
               
                         <div class="checkout">
                             <a href="checkout.php">Proceed to Checkout</a>
+                        </div>
                         </div>
                     </div>
                 </div>

@@ -5,41 +5,27 @@ if ($_SESSION['loggedin'] !== true) {
     exit();
 }
 
-include 'inc.tinynav.php';
 include_once './classes/db.php';
 include './classes/user.php';
-include './classes/Order.php';
+include './classes/book.php';
 
-// Maak databaseverbinding
+// Create a database connection
 $db = new Database();
 $conn = $db->connect();
 
-// Haal de huidige gebruiker op
-$userId = $_SESSION['user_id'];
-$email = $_SESSION['email'];
-$user = new User($conn, $email);
-$userData = $user->getUserData();
+$userId = $_SESSION['user_id']; // Ensure user ID is in session
 
-// Maak een Order-object aan
-$neworder = new Order($conn, $userId);
+$book = new Book($conn);
+$cartBooks = $book->cartBooks($userId);
 
-// Haal de laatste bestelling op
-$order = $neworder->fetchLastOrder();
 
-if ($order) {
-    $orderItems = $neworder->fetchOrderItems($order['id']);
-    $deliveryCost = 4.95;
-} else {
-    $total = 0;
-    foreach ($orderItems as $item) {
-        $total += $item['price'] * $item['quantity'];
-    }
-    $deliveryCost = 4.95;
-    $grandTotal = $total + $deliveryCost;
-
-    $orderId = $neworder->insertOrder($grandTotal);
-    $neworder->insertOrderItems($orderId, $orderItems);
+// Calculate total price
+$total = 0;
+foreach ($cartBooks as $item) {
+    $total += $item['price'] * $item['quantity'];
 }
+$deliveryCost = 4.95;
+$grandTotal = $total + $deliveryCost;
 
 // Checkout form submission logic
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -80,7 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
-
 $conn->close();
 ?>
 
@@ -93,8 +78,11 @@ $conn->close();
     <link rel="stylesheet" href="./css/checkout.css">
 </head>
 <body>
+    <?php include 'inc.tinynav.php'; ?>
+    <div class="container">
+    <h1>Checkout</h1>
     <div class="checkout-container">
-        <h1>Checkout</h1>
+        <div class="checkout-container-flex-one">
         <form method="POST" class="checkout-form">
             <h2>Shipping Details</h2>
             <label for="name">Full Name:</label>
@@ -103,23 +91,29 @@ $conn->close();
             <label for="address">Address:</label>
             <input type="text" id="address" name="address" required>
 
-            <label for="city">City:</label>
-            <input type="text" id="city" name="city" required>
-
-            <label for="postal_code">Postal Code:</label>
-            <input type="text" id="postal_code" name="postal_code" required>
+            <div class="checkout-flex">
+                <div class="flex-one">
+                    <label for="city">City:</label>
+                    <input type="text" id="city" name="city" required>
+                </div>
+                <div class="flex-two">
+                    <label for="postal_code">Postal Code:</label>
+                    <input type="text" id="postal_code" name="postal_code" required>
+                </div>
+            </div>
 
             <label for="phone">Phone Number:</label>
             <input type="text" id="phone" name="phone" required>
-
+            </div>
+            <div class="checkout-container-flex-two">
             <div class="book-products">
                 <h2>My orders</h2>
                     <?php
                         $total = 0;
-                        foreach ($orderItems as $book):
+                        foreach ($cartBooks as $book):
                             $bookTotal = $book['price'] * $book['quantity'];
                             $total += $bookTotal;
-                    ?>
+                        ?>
                         <div class="column-book">
                             <div class="column-book-cover">
                                     <img src="<?php echo $book['image_URL']; ?>" alt="Book cover">
@@ -156,7 +150,8 @@ $conn->close();
         <button type="submit" class="btn-checkout">Place Order</button>    
         <a href="cart.php" class="btn-back">Go Back to Cart</a>
         </form>
-
+            </div>
+    </div>
     </div>
 </body>
 </html>

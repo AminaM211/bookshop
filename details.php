@@ -1,16 +1,15 @@
 <?php
 session_start();
-if($_SESSION['loggedin'] !== true){
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header('Location: login.php');
     exit();
 }
 
 include_once './classes/db.php';
-include 'inc.nav.php';
 include 'cartpopup.php';
-include './classes/user.php';
 include './classes/Admin.php';
-
+include './classes/Review.php';
+include './classes/Book.php';
 
 // Maak databaseverbinding
 $db = new Database();
@@ -18,56 +17,34 @@ $conn = $db->connect();
 
 // Haal de huidige gebruiker op
 $email = $_SESSION['email'];
-$user = new User($conn, $email);
-$userData = $user->getUserData();
 
-// admin check
+// Controleer of gebruiker admin is
 $admin = new Admin($conn);
 $isAdmin = $admin->isAdmin($email);
 
+// books ophalen
+$bookObj = new Book($conn);
+$books = $bookObj->getBooksByGenre('romance', 10);
 
-// Genre selectie
-$genreFilter = isset($_GET['genre']) ? $_GET['genre'] : 'all';
 
-// Query boeken op basis van genre
-if ($genreFilter === 'all') {
-    $sql = "SELECT books.*, authors.first_name, authors.last_name 
-            FROM books 
-            LEFT JOIN authors ON books.author_id = authors.id
-            ORDER BY RAND()";
-} else {
-    $sql = "SELECT books.*, authors.first_name, authors.last_name 
-            FROM books 
-            LEFT JOIN authors ON books.author_id = authors.id 
-            WHERE category_id = (SELECT id FROM categories WHERE name = ?)";
+// Haal het book_id uit de URL
+if (!isset($_GET['id'])) {
+    exit("Book not found");
 }
+$book_id = $_GET['id'];
 
-$stmt = $conn->prepare($sql);
-
-if ($genreFilter !== 'all') {
-    $stmt->bind_param('s', $genreFilter);  // Bind het geselecteerde genre
-}
-
-$stmt->execute();
-$result = $stmt->get_result();
-$books = $result->fetch_all(MYSQLI_ASSOC);
-
-if (!isset($_GET['id']) ){ 
-    exit("Book not found"); 
-} 
-
-$book_id = $_GET['id']; 
-$bookStatement = $conn->prepare('SELECT * FROM books WHERE id = ?'); 
-$bookStatement->bind_param('i', $book_id); 
-$bookStatement->execute(); 
-$bookResult = $bookStatement->get_result(); 
+// Haal het boek op
+$bookStatement = $conn->prepare('SELECT * FROM books WHERE id = ?');
+$bookStatement->bind_param('i', $book_id);
+$bookStatement->execute();
+$bookResult = $bookStatement->get_result();
 $book = $bookResult->fetch_assoc();
 
 if (!$book) {
     exit("Book not found");
 }
 
-//authors database linken
+// Haal de auteur op
 $author = null;
 if ($book) {
     $authorStatement = $conn->prepare('SELECT * FROM authors WHERE id = ?');
@@ -77,6 +54,11 @@ if ($book) {
     $author = $authorResult->fetch_assoc();
 }
 
+// als de form wordt gepost, worden de reviews opgeslagen
+
+
+// Haal alle reviews op
+$reviews = Review::getAll($conn, $book_id);
 
 // Sluit de databaseverbinding
 $conn->close();
@@ -87,32 +69,13 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Online bookstore</title>
+    <title><?php echo htmlspecialchars($book['title']); ?> - Details</title>
+    <link rel="stylesheet" href="./css/normalize.css">
     <link rel="stylesheet" href="./css/details.css">
     <link rel="stylesheet" href="./css/inc.footer.css">
 </head>
 <body>
-    <nav>
-        <input type="checkbox" id="check">
-        <label for="check" class="checkbtn">
-            <i><img src="./images/menu.svg" alt=""></i>
-        </label>
-        <div id="popup" class="filters">
-            <a href="all.php?genre=all" class="filter-btn <?php echo ($genreFilter === 'all') ? 'active' : ''; ?>">All</a>
-            <a href="all.php?genre=fiction" class="filter-btn <?php echo ($genreFilter === 'fiction') ? 'active' : ''; ?>">Fiction</a>
-            <a href="all.php?genre=nonfiction" class="filter-btn <?php echo ($genreFilter === 'nonfiction') ? 'active' : ''; ?>">Non-Fiction</a>
-            <a href="all.php?genre=romance" class="filter-btn <?php echo ($genreFilter === 'romance') ? 'active' : ''; ?>">Romance</a>
-            <a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?>">Thriller</a>
-        </div>
-    </nav>
-    
-    <div id="categories">
-        <a href="all.php?genre=all" class="filter-btn <?php echo ($genreFilter === 'all') ? 'active' : ''; ?>">All</a>
-        <a href="all.php?genre=fiction" class="filter-btn <?php echo ($genreFilter === 'fiction') ? 'active' : ''; ?>">Fiction</a>
-        <a href="all.php?genre=nonfiction" class="filter-btn <?php echo ($genreFilter === 'nonfiction') ? 'active' : ''; ?>">Non-Fiction</a>
-        <a href="all.php?genre=romance" class="filter-btn <?php echo ($genreFilter === 'romance') ? 'active' : ''; ?>">Romance</a>
-        <a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?>">Thriller</a>
-    </div>  
+    <?php include 'inc.nav.php'; ?>
 
     <div class="book-details">
     <div class="detailsflex">
@@ -160,13 +123,13 @@ $conn->close();
                     <img src="./images/home.svg" alt="home">
                     <p>Free delivery in our bookstore near you</p>
                 </div>
-            </div>
 
             <?php if($isAdmin): ?>
             <div class="admin-panel">
                 <a href="editproduct.php?id=<?php echo $book['id']?>"> Edit details </a>
             </div>
         <?php endif; ?>
+            </div>
         </div>
         </div>
             <div class="secondflex">
@@ -182,7 +145,7 @@ $conn->close();
                             <p>Auteur: </p>
                             <p class="author"><?php echo $author ? $author['first_name'] . " " . $author['last_name'] : 'Author unknown'; ?></p>
                         </div>
-                        <div class="uitgeverij flex white">
+                        <div class="uitgeverij flex">
                             <p>Publisher: </p>
                             <p>Gallery Books</p>
                         </div>  
@@ -214,80 +177,110 @@ $conn->close();
             </div>
         </div>
 
+
         <div class="review">
                 <img src="./images/stars.svg" alt="star">
                 <div class="write-review">
                     <img src="./images/write.svg" alt="write" class="writeimg">
-                    <a class="scroll-link" href="#gotoreview">write a review</a>
+                    <a href="#">write a review</a>
                 </div>
         </div>
-
-        <div class="review-form" id="gotoreview">
+ <!--
+        <div class="review-form">
             <h4>Write a review</h4>
             <p class="inf" ><span>*</span> Indicates a required field</p>
-            <form action="bookreview.php" method="post">
+            <form class="form-postreview" action="submit_review.php" method="post">
                 <div class="score">
                     <p><span>*</span> Score: </p>
                     <div class="stars">
-                        <input type="radio" id="star5" name="score" value="5" required>
+                        <input type="radio" id="star5" name="score" value="5" data-rating=1 required>
                         <label for="star5"></label>
-                        <input type="radio" id="star4" name="score" value="4">
+                        <input type="radio" id="star4" name="score" value="4" data-rating=2>
                         <label for="star4"></label>
-                        <input type="radio" id="star3" name="score" value="3">
+                        <input type="radio" id="star3" name="score" value="3" data-rating=3>
                         <label for="star3"></label>
-                        <input type="radio" id="star2" name="score" value="2">
+                        <input type="radio" id="star2" name="score" value="2" data-rating=4>
                         <label for="star2"></label>
-                        <input type="radio" id="star1" name="score" value="1">
+                        <input type="radio" id="star1" name="score" value="1" data-rating=5>
                         <label for="star1"></label>
                     </div>
-                </div>
+                </div> 
                 <label for="Book"> Book: </label>
                 <input readonly class="booktitle" placeholder="<?php echo $book['title']; ?>" name="booktitle">
                 <label for="Title"><span>*</span> Title: </label>
                 <input required type="text" name="title">
                 <label for="review"><span>*</span> Comment:</label>
                 <textarea required name="review"></textarea>
-                <button class="post" type="submit">Post</button>
+                <button class="post" id="btnAddComment" type="submit">Post</button>
             </form>
+        </div>-->
+
+        <div class=postt">
+            <div class="post__comments">
+                <div class="post__comment__form">
+                    <input type="text" name="title">
+                    <a href="#" id="btnAddComment">Add Review</a>
+                </div>
+                
+                <ul class="post__comments__likes">
+                    <li>This is a first comment</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="reviews-list">
+            <h4>Reviews (<?php echo count($reviews); ?>)</h4>
+            <?php if (!empty($reviews)): ?>
+                <?php foreach ($reviews as $review): ?>
+                    <div class="review-item">
+                        <p><strong><?php echo htmlspecialchars($review['user_id']); ?></strong></p>
+                        <p>Title: <?php echo htmlspecialchars($review['title']); ?></p>
+                        <p>Comment: <?php echo htmlspecialchars($review['comment']); ?></p>
+                        <p>Score: <?php echo htmlspecialchars($review['rating']); ?>/5</p>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>No reviews yet.</p>
+            <?php endif; ?>
         </div>
     </div>
 
     <section class="bestsellers">
-    <div class="section-header">
-        <h2>More books from <span>Romance</span></h2>
-        <a href="all.php?genre=romance" class="view-all">View All <img src="./images/rightarrow.svg" alt=""></a>
-    </div>
+        <div class="section-header">
+            <h2>More books from <span>Romance</span></h2>
+            <a href="all.php?genre=romance" class="view-all">View All <img src="./images/rightarrow.svg" alt=""></a>
+        </div>
 
-    <div class="scroll-container">
-    <button class="scroll-btn left-btn"><img src="./images/leftarrow.svg" alt=""></button>
-    <div class="products">
-        <?php if (!empty($books)): ?>
-            <?php foreach($books as $book): ?>
-                <div class="product-item">
-                    <a href="details.php?id=<?php echo $book['id']?>"><img src="<?php echo $book['image_URL']; ?>" alt="Book cover"></a>
-                    <div class="product-info">
-                            <a class="product-title" href="details.php?id=<?php echo $book['id']?>"><h3><?php echo $book['title']; ?></h3></a>
-                            <div class="subgenre"><?php echo ($book['subgenre']); ?></div>
-                            <div class="product-author">
-                                <?php echo $book['first_name'] . " " . $book['last_name'];?>
+        <div class="scroll-container">
+            <button class="scroll-btn left-btn"><img src="./images/leftarrow.svg" alt=""></button>
+            <div class="products">
+                <?php if (!empty($books)): ?>
+                    <?php foreach($books as $book): ?>
+                        <div class="product-item">
+                            <a href="details.php?id=<?php echo $book['id']?>"><img src="<?php echo $book['image_URL']; ?>" alt="Book cover"></a>
+                            <div class="product-info">
+                                <a class="product-title" href="details.php?id=<?php echo $book['id']?>"><h3><?php echo $book['title']; ?></h3></a>
+                                <div class="subgenre"><?php echo ($book['subgenre']); ?></div>
+                                <div class="product-author">
+                                    <?php echo $book['first_name'] . " " . $book['last_name'];?>
+                                </div>
+                                <div class="product-price">€<?php echo number_format($book['price'], 2); ?></div>
                             </div>
-                            <div class="product-price">€<?php echo number_format($book['price'], 2); ?></div>
-                                                </div>
-                </div>
-            <?php endforeach; ?>
-        <?php endif; ?>
-    </div>
-    <button class="scroll-btn right-btn"><img src="./images/rightarrow.svg" alt=""></button> 
-    </div>
-</section>
-
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+            <button class="scroll-btn right-btn"><img src="./images/rightarrow.svg" alt=""></button> 
+        </div>
+    </section>
 
     <?php include 'inc.footer.php'; ?>
 
     <script src="./js/index.js"></script>
     <script src="./js/cart.js"></script>
+    <!-- <script src="./js/review.js"></script> -->
     <script>
-        document.querySelectorAll('.scroll-link').forEach(anchor => {
+        document.querySelectorAll('.postt').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
             e.preventDefault();
             document.querySelector(this.getAttribute('href')).scrollIntoView({
@@ -295,6 +288,11 @@ $conn->close();
                 block: 'start'
             });
             });
+        });
+
+        document.querySelector('#btnAddComment').addEventListener('click', function() {
+            console_log('hi'); 
+            alert('hi');  
         });
     </script>
 </body>

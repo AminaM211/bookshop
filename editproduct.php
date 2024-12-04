@@ -8,7 +8,7 @@ if ($_SESSION['loggedin'] !== true) {
 include_once './classes/db.php';
 include 'inc.nav.php';
 include_once './classes/Products.php';
-include './classes/user.php';
+// include './classes/user.php';
 include './classes/Admin.php';
 
 $db = new Database();
@@ -16,8 +16,8 @@ $conn = $db->connect();
 
 // Haal de huidige gebruiker op
 $email = $_SESSION['email'];
-$user = new User($conn, $email);
-$userData = $user->getUserData();
+// $user = new User($conn, $email);
+// $userData = $user->getUserData();
 
 // admin check
 $admin = new Admin($conn);

@@ -15,5 +15,14 @@ class User {
         $result = $stmt->get_result();
         return $result->fetch_assoc();
     }
+
+    public function getBookBucks() {
+        $query = "SELECT book_bucks FROM users WHERE email = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("s", $this->email);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        return $result['book_bucks'] ?? 0;
+    }
 }
 ?>

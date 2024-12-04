@@ -16,6 +16,14 @@ class Order {
         $result = $stmt->get_result();
         return $result->fetch_assoc();
     }
+    public function fetchAllOrders($userId) {
+        $sql = "SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
 
     public function fetchOrderItems($orderId) {
         $sql = "
@@ -38,6 +46,7 @@ class Order {
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->num_rows > 0 ? $result->fetch_all(MYSQLI_ASSOC) : [];
+        // return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     public function insertOrder($grandTotal) {

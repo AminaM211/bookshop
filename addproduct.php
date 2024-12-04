@@ -5,9 +5,7 @@ if($_SESSION['loggedin'] !== true ){
     exit();
 }
 
-include 'inc.nav.php';
 include_once './classes/Db.php';
-include './classes/user.php';
 include './classes/Admin.php';
 
 // Maak databaseverbinding
@@ -16,8 +14,6 @@ $conn = $db->connect();
 
 // Haal de huidige gebruiker op
 $email = $_SESSION['email'];
-$user = new User($conn, $email);
-$userData = $user->getUserData();
 
 // admin check
 $admin = new Admin($conn);
@@ -131,7 +127,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         echo "Fout: " . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
     }
 }
-// Sluit de databaseverbinding
 $conn->close();
 
 ?><!DOCTYPE html>
@@ -140,31 +135,12 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Product</title>
+    <link rel="stylesheet" href="./css/normalize.css">
     <link rel="stylesheet" href="./css/addproduct.css">
 </head>
 <body>
-<nav>
-        <input type="checkbox" id="check">
-        <label for="check" class="checkbtn">
-            <i><img src="./images/menu.svg" alt=""></i>
-        </label>
-        <div id="popup" class="filters">
-            <a href="all.php?genre=all" class="filter-btn <?php echo ($genreFilter === 'all') ? 'active' : ''; ?>">All</a>
-            <a href="all.php?genre=fiction" class="filter-btn <?php echo ($genreFilter === 'fiction') ? 'active' : ''; ?>">Fiction</a>
-            <a href="all.php?genre=nonfiction" class="filter-btn <?php echo ($genreFilter === 'nonfiction') ? 'active' : ''; ?>">Non-Fiction</a>
-            <a href="all.php?genre=romance" class="filter-btn <?php echo ($genreFilter === 'romance') ? 'active' : ''; ?>">Romance</a>
-            <a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?>">Thriller</a>
-        </div>
-    </nav>
+    <?php include 'inc.nav.php'; ?>
     
-    <div id="categories">
-        <a href="all.php?genre=all" class="filter-btn <?php echo ($genreFilter === 'all') ? 'active' : ''; ?>">All</a>
-        <a href="all.php?genre=fiction" class="filter-btn <?php echo ($genreFilter === 'fiction') ? 'active' : ''; ?>">Fiction</a>
-        <a href="all.php?genre=nonfiction" class="filter-btn <?php echo ($genreFilter === 'nonfiction') ? 'active' : ''; ?>">Non-Fiction</a>
-        <a href="all.php?genre=romance" class="filter-btn <?php echo ($genreFilter === 'romance') ? 'active' : ''; ?>">Romance</a>
-        <a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?>">Thriller</a>
-    </div>
-
     <?php if($isAdmin === false): ?>
     <div class="falseadmin">
         <img src="./images/connectionlost.svg" alt="">
@@ -208,7 +184,7 @@ $conn->close();
 
             <div class="form-group">
             <label for="category_id">Category ID:</label>
-            <input type="number" id="category_id" name="category_id" required>
+            <input type="number" id="category_id" name="category_id" placeholder= "1 = Fiction, 2 = NonFiction, 3 = Romance, 4 = Thriller " required>
             </div>
 
             <div class="form-group">

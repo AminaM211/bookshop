@@ -1,28 +1,14 @@
-document.querySelector('#btnAddReview').addEventListener('click', function() {
-    //postid?
-
-    //commenttext?
-    let postid = this.dataset.postid;
-    let text = document.querySelector('#reviewText').value;
-    //post naar database (AJAX)
-    let formData = new FormData();
-
-    formData.append("text", text);
-    formData.append("postid", postid);
-
-
-    fetch('AJAX/savereview.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(result => {
-        let newReview = document.createElement('li');
-        newReview.innerHTML = result.body;
-        document.querySelector('.post_reviews_list').appendChild(newReview);
-    })
-    .catch(error => {
-        console.error('Error:', error);
+document.querySelectorAll('.scroll-link').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+    e.preventDefault();
+    document.querySelector(this.getAttribute('href')).scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
     });
-    //antwoord ok? toon comment onderaan
+    });
+});
+
+document.querySelector('#btnAddComment').addEventListener('click', function() {
+    console_log('hi'); 
+    alert('hi');  
 });
