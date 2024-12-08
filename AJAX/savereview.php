@@ -34,7 +34,7 @@ if (!empty($_POST)) {
         'message' => 'Review submitted successfully.',
         'body' => htmlspecialchars_decode($r->getComment()),
         'title' => htmlspecialchars_decode($r->getTitle()),
-        'name' => $_SESSION['name'],
+        'name' => isset($_SESSION['name']) ? $_SESSION['name'] : 'User',
         'score' => $r->getScore()
     ];
 
