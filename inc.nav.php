@@ -5,9 +5,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 }
 
 include_once './classes/Db.php';
-include './classes/user.php';
-// include './classes/Admin.php';
-// include './classes/Book.php';
+include_once './classes/user.php';
 
 // Maak databaseverbinding
 $db = new Database();

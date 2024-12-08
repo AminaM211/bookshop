@@ -279,6 +279,35 @@ h4 {
     padding: 10px 0;
 }
 
+.displayreview {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 10px 0px;
+    border: #dadada 1px solid;
+    padding: 15px;
+    background-color: white;
+    width: 100%;
+    border-radius: 5px;
+}
+
+#reviewtitle {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.reviewflex {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    /* justify-content: center; */
+    align-items: center;
+}
+
+#reviewname {
+    font-weight: 200;
+}
+
 .booktitle {
     background-color: rgba(128, 128, 128, 0.081);
     border: 1px solid #000000;
@@ -295,6 +324,13 @@ h4 {
     /* margin-top: -1px; */
     font-size: 0.7em;
 } 
+
+.review-form-and-list {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 30px;
+}
 
 .write-review {
     background-color: #ff6f61;
@@ -351,14 +387,50 @@ h4 {
     width: 40vw;
 }
 
-@media (max-width: 600x) {
+.reviews h4 {
+    margin-top: 30px;
+}
+
+#reviewscore {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+@media (max-width: 800px) {
+    .reviews h4 {
+        margin-top: 0px;
+    }
+    
     .review-form input, textarea {
-        width: 40vw;
+        width: 80vw;
     }
     
     .review-form .post {
-        width: 40vw;
+        width: 80vw;
     }
+
+    .review-form button {
+        width: 80vw;
+    }
+    .displayreview {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin: 10px 0px;
+        border: #dadada 1px solid;
+        padding: 15px;
+        background-color: white;
+        width: 100%;
+        border-radius: 5px;
+    }
+    .review-form-and-list {
+        display: flex;
+        flex-direction: column;
+        justify-content: none;
+        gap: 10px;
+    }
+    
 }
 
 input  {
@@ -447,6 +519,11 @@ textarea {
     background-color: #ff5722;
 }
 
+.hiddenpurchase {
+    display: none;
+    color: red;
+    margin-bottom: 10px;
+}
 
 /* ___________________more books_________________ */
 
@@ -467,6 +544,7 @@ textarea {
     align-items: center;
     margin: 20px 0;
 }
+
 
 
 .product-item {

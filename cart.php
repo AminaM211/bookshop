@@ -5,9 +5,9 @@ if ($_SESSION['loggedin'] !== true) {
     exit();
 }
 
-include 'inc.nav.php';
+include_once 'inc.nav.php';
 include_once './classes/db.php';
-include './classes/user.php';
+include_once './classes/user.php';
 include './classes/Cartbooks.php';
 
 // Create a database connection
@@ -47,29 +47,6 @@ $conn->close();
     <link rel="stylesheet" href="./css/inc.footer.css">
 </head>
 <body>
-<nav>
-    <input type="checkbox" id="check">
-        <label for="check" class="checkbtn">
-            <i><img src="./images/menu.svg" alt=""></i>
-        </label>
-        <div id="popup" class="filters">
-            <a href="all.php?genre=all" class="filter-btn <?php echo ($genreFilter === 'all') ? 'active' : ''; ?>">All</a>
-            <a href="all.php?genre=fiction" class="filter-btn <?php echo ($genreFilter === 'fiction') ? 'active' : ''; ?>">Fiction</a>
-            <a href="all.php?genre=nonfiction" class="filter-btn <?php echo ($genreFilter === 'nonfiction') ? 'active' : ''; ?>">Non-Fiction</a>
-            <a href="all.php?genre=romance" class="filter-btn <?php echo ($genreFilter === 'romance') ? 'active' : ''; ?>">Romance</a>
-            <a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?>">Thriller</a>
-        </div>
-    </nav>
-    
-
-    <div id="categories">
-        <a href="all.php?genre=all" class="filter-btn <?php echo ($genreFilter === 'all') ? 'active' : ''; ?>">All</a>
-        <a href="all.php?genre=fiction" class="filter-btn <?php echo ($genreFilter === 'fiction') ? 'active' : ''; ?>">Fiction</a>
-        <a href="all.php?genre=nonfiction" class="filter-btn <?php echo ($genreFilter === 'nonfiction') ? 'active' : ''; ?>">Non-Fiction</a>
-        <a href="all.php?genre=romance" class="filter-btn <?php echo ($genreFilter === 'romance') ? 'active' : ''; ?>">Romance</a>
-        <a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?>">Thriller</a>
-    </div>
-
     <div class="cart-container">
         <div class="column-1">
             <?php if (empty($cartBooks)): ?>

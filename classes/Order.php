@@ -81,6 +81,14 @@ class Order {
         return $result->fetch_all(MYSQLI_ASSOC); // Haal alle resultaten op als associatieve array
     }
 
+    // functie om te zien of user een book_id reeds heeft gekocht
+    public function purchased($userId, $bookId) {
+        $stmt = $this->conn->prepare('SELECT * FROM order_items WHERE order_id IN (SELECT id FROM orders WHERE user_id = ?) AND book_id = ?');
+        $stmt->bind_param('ii', $userId, $bookId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->num_rows > 0;
+    }
     
 }
 ?>

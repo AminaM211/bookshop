@@ -10,6 +10,7 @@ include 'cartpopup.php';
 include './classes/Admin.php';
 include './classes/Book.php';
 include './classes/Review.php';
+include './classes/Order.php';
 
 // Maak databaseverbinding
 $db = new Database();
@@ -17,6 +18,7 @@ $conn = $db->connect();
 
 // Haal de huidige gebruiker op
 $email = $_SESSION['email'];
+$user_id = $_SESSION['user_id'];
 
 // Controleer of gebruiker admin is
 $admin = new Admin($conn);
@@ -57,6 +59,10 @@ if ($book) {
 // Haal de reviews op voor dit boek
 $reviewObj = new Review($conn);
 $allReviews = $reviewObj->getReviews($book_id);
+
+$notpurchased = false;
+$orderObj = new Order($conn, $user_id);
+$purchased = $orderObj->purchased($user_id, $book_id);
 
 
 // Sluit de databaseverbinding
@@ -179,12 +185,14 @@ $conn->close();
 
         <div class="review" id="scroll-to">
                 <img src="./images/stars.svg" alt="star">
-                <div class="write-review">
+                <button class="write-review">
                     <img src="./images/write.svg" alt="write" class="writeimg">
                     <a href="#scroll-to" class="scroll-link">write a review</a>
-                </div>
+                </button>
         </div>
-
+        <p class="hiddenpurchase">You must purchase this book to leave a review.</p>
+        <div class="review-form-and-list">
+        <?php if ($purchased): ?>
         <div class="review-form">
         <h4>Write a review</h4>
         <p class="inf"><span>*</span> Indicates a required field</p>
@@ -200,7 +208,7 @@ $conn->close();
                     <label for="star3"></label>
                     <input type="radio" id="star2" name="score" value="2" data-rating="4">
                     <label for="star2"></label>
-                    <input type="radio" id="star1" name="score" value="1" data-rating="5">
+                    <input type="radio" id="star1" name="score" value="1" data-rating="5" checked>
                     <label for="star1"></label>
                 </div>
             </div>
@@ -214,21 +222,27 @@ $conn->close();
         </form>
         <div id="responseMessage"></div> <!-- To display success or error message -->
     </div>
+    <?php else: ?>
+        <?php $notpurchased = true; ?>
+    <?php endif; ?>
 
        <!-- Display Reviews -->
        <div class="reviews">
-        <h3>Reviews (<?php echo count($allReviews); ?>)</h3>
+        <h4>Reviews (<?php echo count($allReviews); ?>)</h4>
         <?php foreach ($allReviews as $review): ?>
-            <li class="review">
-                <p id="reviewname"><strong><?php echo htmlspecialchars($review['name']); ?></strong></p>
-                <p id="reviewscore">
-                    <?php echo str_repeat("⭐", $review['score']); ?>
-                    <!-- <?php echo str_repeat("⭐", $review['score']); ?> -->
-                </p>
+            <li class="displayreview">
+                <div class="reviewflex">
+                    <p id="reviewname"><strong><?php echo htmlspecialchars($review['name']); ?></strong></p>
+                    <p id="reviewscore">
+                        <?php echo str_repeat('<img src="./images/star.svg" alt="star" style="width: 15px;">', $review['score']); ?>
+                        <?php echo str_repeat('<img src="./images/greystar.svg" alt="star" style="width: 15px; padding-left: 2px;">', 5 - $review['score']); ?>
+                    </p>
+                </div>
                 <p id="reviewtitle"><?php echo htmlspecialchars($review['title']); ?></p>
                 <p id="reviewcomment"><?php echo htmlspecialchars($review['comment']); ?></p>
             </li>
         <?php endforeach; ?>
+        </div>
     </div>
     </div>
 
@@ -266,6 +280,19 @@ $conn->close();
     <script src="./js/index.js"></script>
     <script src="./js/cart.js"></script>
     <script>
+    const notPurchased = <?php echo $notpurchased ? 'true' : 'false'; ?>;
+    document.querySelector(".scroll-link").addEventListener("click", function(e) {
+    e.preventDefault();
+    if (notPurchased) {
+        document.querySelector('.hiddenpurchase').style.display = 'inline-block';
+    } else {
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+    });
+
     document.getElementById("reviewForm").addEventListener("submit", function (e) {
     e.preventDefault();
 
@@ -277,7 +304,7 @@ $conn->close();
     // Get form data
     let formData = new FormData();
     formData.append('book_id', <?php echo $book_id; ?>);
-    formData.append('name', '<?php echo $_SESSION['name']; ?>');
+    formData.append('name', '<?php echo isset($_SESSION['name']) ? $_SESSION['name'] : 'name'; ?>');
     formData.append('comment', comment);
     formData.append('score', score);
     formData.append('title', title);
@@ -289,32 +316,37 @@ $conn->close();
     })
         .then(response => response.json())
         .then(result => {
-            let newComment = document.createElement('p');
-            newComment.innerHTML = result.body;
-            document
-                .querySelector('#reviewcomment')
-                .appendChild(newComment);
-        
-            let newTitle = document.createElement('p');
-            newTitle.innerHTML = result.title;
-            document
-                .querySelector('#reviewtitle')
-                .appendChild(newTitle);
+            let newReview = document.createElement('li');
+            newReview.classList.add('displayreview');
 
-            let newScore = document.createElement('p');
-            newScore.innerHTML = '⭐'.repeat(result.score)
-            document
-                .querySelector('#reviewscore')
-                .appendChild(newScore);
+            let reviewFlex = document.createElement('div');
+            reviewFlex.classList.add('reviewflex');
+            newReview.appendChild(reviewFlex);
 
             let newName = document.createElement('p');
-            newName.innerHTML = result.name;
-            document
-                .querySelector('#reviewname')
-                .appendChild(newName);
+            newName.id = 'reviewname';
+            newName.innerHTML = `<strong>${result.name}</strong>`;
+            reviewFlex.appendChild(newName);
 
+            let newScore = document.createElement('p');
+            newScore.id = 'reviewscore';
+            newScore.innerHTML = 
+                '<img src="./images/star.svg" alt="star" style="width: 20px;">'.repeat(result.score) + 
+                '<img src="./images/greystar.svg" alt="star" style="width: 20px; padding-left: 2px;">'.repeat(5 - result.score);
+            reviewFlex.appendChild(newScore);
 
-            // Clear the form
+            let newTitle = document.createElement('p');
+            newTitle.id = 'reviewtitle';
+            newTitle.textContent = result.title;
+            newReview.appendChild(newTitle);
+
+            let newComment = document.createElement('p');
+            newComment.id = 'reviewcomment';
+            newComment.textContent = result.body;
+            newReview.appendChild(newComment);
+
+            document.querySelector('.reviews').appendChild(newReview);
+
             document.querySelector('textarea[name="review"]').value = '';
             document.querySelector('input[name="score"]:checked').checked = false;
             document.querySelector('input[name="title"]').value = '';
@@ -323,6 +355,7 @@ $conn->close();
             console.error("Error:", error);
         });
     });
+
     </script>
 </body>
 </html>

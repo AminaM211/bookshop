@@ -7,6 +7,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
 include_once '../classes/db.php';
 include '../classes/Review.php'; 
+include '../classes/User.php';
 
 // Maak databaseverbinding
 $db = new Database();
@@ -14,7 +15,6 @@ $conn = $db->connect();
 
 // Haal de huidige gebruiker op
 $user_id = $_SESSION['user_id']; 
-
 
 if (!empty($_POST)) {
     $r = new Review($conn);
@@ -32,10 +32,10 @@ if (!empty($_POST)) {
     $response = [
         'status' => 'success',
         'message' => 'Review submitted successfully.',
-        'body' => htmlspecialchars($r->getComment()),
-        'title' => htmlspecialchars($r->getTitle()),
-        'name' => htmlspecialchars($_SESSION['name']),
-        'score' => htmlspecialchars($r->getScore())
+        'body' => htmlspecialchars_decode($r->getComment()),
+        'title' => htmlspecialchars_decode($r->getTitle()),
+        'name' => htmlspecialchars_decode($_SESSION['name'] ?? 'name'),
+        'score' => htmlspecialchars_decode($r->getScore())
     ];
 
     header ('Content-Type: application/json');
