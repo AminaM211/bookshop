@@ -5,7 +5,6 @@
     $db = new Database();
     $conn = $db->connect();
     
-
     // Controleer of er POST-data is verzonden
     if(!empty($_POST)){
         $name = $_POST['name'];
