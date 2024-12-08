@@ -72,5 +72,16 @@ $conn->close();
         <a href="all.php?genre=romance" class="filter-btn <?php echo ($genreFilter === 'romance') ? 'active' : ''; ?>">Romance</a>
         <a href="all.php?genre=thriller" class="filter-btn <?php echo ($genreFilter === 'thriller') ? 'active' : ''; ?>">Thriller</a>
     </div>
+
+    <script>
+        document.getElementById('check').addEventListener('change', function() {
+            var menuIcon = document.querySelector('.checkbtn img');
+            if (this.checked) {
+                menuIcon.src = './images/hovermenu.svg';
+            } else {
+                menuIcon.src = './images/menu.svg';
+            }
+        });
+    </script>
 </body>
 </html>

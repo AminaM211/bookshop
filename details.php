@@ -8,8 +8,8 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 include_once './classes/db.php';
 include 'cartpopup.php';
 include './classes/Admin.php';
-include './classes/Review.php';
 include './classes/Book.php';
+include './classes/Review.php';
 
 // Maak databaseverbinding
 $db = new Database();
@@ -54,11 +54,10 @@ if ($book) {
     $author = $authorResult->fetch_assoc();
 }
 
-// als de form wordt gepost, worden de reviews opgeslagen
+// Haal de reviews op voor dit boek
+$reviewObj = new Review($conn);
+$allReviews = $reviewObj->getReviews($book_id);
 
-
-// Haal alle reviews op
-$reviews = Review::getAll($conn, $book_id);
 
 // Sluit de databaseverbinding
 $conn->close();
@@ -178,71 +177,59 @@ $conn->close();
         </div>
 
 
-        <div class="review">
+        <div class="review" id="scroll-to">
                 <img src="./images/stars.svg" alt="star">
                 <div class="write-review">
                     <img src="./images/write.svg" alt="write" class="writeimg">
-                    <a href="#">write a review</a>
+                    <a href="#scroll-to" class="scroll-link">write a review</a>
                 </div>
         </div>
- <!--
+
         <div class="review-form">
-            <h4>Write a review</h4>
-            <p class="inf" ><span>*</span> Indicates a required field</p>
-            <form class="form-postreview" action="submit_review.php" method="post">
-                <div class="score">
-                    <p><span>*</span> Score: </p>
-                    <div class="stars">
-                        <input type="radio" id="star5" name="score" value="5" data-rating=1 required>
-                        <label for="star5"></label>
-                        <input type="radio" id="star4" name="score" value="4" data-rating=2>
-                        <label for="star4"></label>
-                        <input type="radio" id="star3" name="score" value="3" data-rating=3>
-                        <label for="star3"></label>
-                        <input type="radio" id="star2" name="score" value="2" data-rating=4>
-                        <label for="star2"></label>
-                        <input type="radio" id="star1" name="score" value="1" data-rating=5>
-                        <label for="star1"></label>
-                    </div>
-                </div> 
-                <label for="Book"> Book: </label>
-                <input readonly class="booktitle" placeholder="<?php echo $book['title']; ?>" name="booktitle">
-                <label for="Title"><span>*</span> Title: </label>
-                <input required type="text" name="title">
-                <label for="review"><span>*</span> Comment:</label>
-                <textarea required name="review"></textarea>
-                <button class="post" id="btnAddComment" type="submit">Post</button>
-            </form>
-        </div>-->
-
-        <div class=postt">
-            <div class="post__comments">
-                <div class="post__comment__form">
-                    <input type="text" name="title">
-                    <a href="#" id="btnAddComment">Add Review</a>
+        <h4>Write a review</h4>
+        <p class="inf"><span>*</span> Indicates a required field</p>
+        <form id="reviewForm" class="form-postreview">
+            <div class="score">
+                <p><span>*</span> Score: </p>
+                <div class="stars">
+                    <input type="radio" id="star5" name="score" value="5" data-rating="1" required>
+                    <label for="star5"></label>
+                    <input type="radio" id="star4" name="score" value="4" data-rating="2">
+                    <label for="star4"></label>
+                    <input type="radio" id="star3" name="score" value="3" data-rating="3">
+                    <label for="star3"></label>
+                    <input type="radio" id="star2" name="score" value="2" data-rating="4">
+                    <label for="star2"></label>
+                    <input type="radio" id="star1" name="score" value="1" data-rating="5">
+                    <label for="star1"></label>
                 </div>
-                
-                <ul class="post__comments__likes">
-                    <li>This is a first comment</li>
-                </ul>
             </div>
-        </div>
+            <label for="Book"> Book: </label>
+            <input readonly class="booktitle" placeholder="<?php echo $book['title']; ?>" name="booktitle">
+            <label for="Title"><span>*</span> Title: </label>
+            <input required type="text" name="title">
+            <label for="review"><span>*</span> Comment:</label>
+            <textarea required name="review"></textarea>
+            <button class="post" id="btnAddComment" type="submit">Post</button>
+        </form>
+        <div id="responseMessage"></div> <!-- To display success or error message -->
+    </div>
 
-        <div class="reviews-list">
-            <h4>Reviews (<?php echo count($reviews); ?>)</h4>
-            <?php if (!empty($reviews)): ?>
-                <?php foreach ($reviews as $review): ?>
-                    <div class="review-item">
-                        <p><strong><?php echo htmlspecialchars($review['user_id']); ?></strong></p>
-                        <p>Title: <?php echo htmlspecialchars($review['title']); ?></p>
-                        <p>Comment: <?php echo htmlspecialchars($review['comment']); ?></p>
-                        <p>Score: <?php echo htmlspecialchars($review['rating']); ?>/5</p>
-                    </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p>No reviews yet.</p>
-            <?php endif; ?>
-        </div>
+       <!-- Display Reviews -->
+       <div class="reviews">
+        <h3>Reviews (<?php echo count($allReviews); ?>)</h3>
+        <?php foreach ($allReviews as $review): ?>
+            <li class="review">
+                <p id="reviewname"><strong><?php echo htmlspecialchars($review['name']); ?></strong></p>
+                <p id="reviewscore">
+                    <?php echo str_repeat("⭐", $review['score']); ?>
+                    <!-- <?php echo str_repeat("⭐", $review['score']); ?> -->
+                </p>
+                <p id="reviewtitle"><?php echo htmlspecialchars($review['title']); ?></p>
+                <p id="reviewcomment"><?php echo htmlspecialchars($review['comment']); ?></p>
+            </li>
+        <?php endforeach; ?>
+    </div>
     </div>
 
     <section class="bestsellers">
@@ -278,22 +265,64 @@ $conn->close();
 
     <script src="./js/index.js"></script>
     <script src="./js/cart.js"></script>
-    <!-- <script src="./js/review.js"></script> -->
     <script>
-        document.querySelectorAll('.postt').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-            });
-        });
+    document.getElementById("reviewForm").addEventListener("submit", function (e) {
+    e.preventDefault();
 
-        document.querySelector('#btnAddComment').addEventListener('click', function() {
-            console_log('hi'); 
-            alert('hi');  
+    let book_id = <?php echo $book_id; ?>;
+    let comment = document.querySelector('textarea[name="review"]').value;
+    let score = document.querySelector('input[name="score"]:checked').value;
+    let title = document.querySelector('input[name="title"]').value;
+
+    // Get form data
+    let formData = new FormData();
+    formData.append('book_id', <?php echo $book_id; ?>);
+    formData.append('name', '<?php echo $_SESSION['name']; ?>');
+    formData.append('comment', comment);
+    formData.append('score', score);
+    formData.append('title', title);
+
+    // Post the review
+    fetch("AJAX/savereview.php", {
+        method: "POST",
+        body: formData
+    })
+        .then(response => response.json())
+        .then(result => {
+            let newComment = document.createElement('p');
+            newComment.innerHTML = result.body;
+            document
+                .querySelector('#reviewcomment')
+                .appendChild(newComment);
+        
+            let newTitle = document.createElement('p');
+            newTitle.innerHTML = result.title;
+            document
+                .querySelector('#reviewtitle')
+                .appendChild(newTitle);
+
+            let newScore = document.createElement('p');
+            newScore.innerHTML = '⭐'.repeat(result.score)
+            document
+                .querySelector('#reviewscore')
+                .appendChild(newScore);
+
+            let newName = document.createElement('p');
+            newName.innerHTML = result.name;
+            document
+                .querySelector('#reviewname')
+                .appendChild(newName);
+
+
+            // Clear the form
+            document.querySelector('textarea[name="review"]').value = '';
+            document.querySelector('input[name="score"]:checked').checked = false;
+            document.querySelector('input[name="title"]').value = '';
+        })
+        .catch(error => {
+            console.error("Error:", error);
         });
+    });
     </script>
 </body>
 </html>
