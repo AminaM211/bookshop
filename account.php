@@ -5,10 +5,10 @@ if($_SESSION['loggedin'] !== true){
     exit();
 }
 
-include 'inc.nav.php';
+include_once 'inc.nav.php';
 include_once './classes/Db.php';
-include './classes/Admin.php';
-include './classes/Order.php';
+include_once './classes/Admin.php';
+include_once './classes/Order.php';
 
 // Maak databaseverbinding
 $db = new Database();
@@ -27,13 +27,15 @@ $userId = $_SESSION['user_id'];
 $neworder = new Order($conn, $userId);
 $order = $neworder->fetchAllOrders($userId);
 
+$orderItems = [];
 if ($order) {
-    $orderItems = [];
     foreach ($order as $singleOrder) {
         $orderItems = array_merge($orderItems, $neworder->fetchOrderItems($singleOrder['id']));
     }
     $deliveryCost = 4.95;
-} else {
+}
+
+if (empty($orderItems)) {
     $total = 0;
     foreach ($orderItems as $item) {
         $total += $item['price'] * $item['quantity'];
@@ -41,7 +43,7 @@ if ($order) {
     $deliveryCost = 4.95;
     $grandTotal = $total + $deliveryCost;
 
-    $orderId = $neworder->insertOrder($grandTotal);
+    $orderId = $neworder->insertOrder($grandTotal, 'Order Name'); // Provide a value for the 'name' field
     $neworder->insertOrderItems($orderId, $orderItems);
 }
 

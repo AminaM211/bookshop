@@ -8,7 +8,7 @@ if ($_SESSION['loggedin'] !== true) {
 include_once 'inc.nav.php';
 include_once './classes/Db.php';
 include_once './classes/user.php';
-include './classes/Cartbooks.php';
+include_once './classes/Cartbooks.php';
 
 // Create a database connection
 $db = new Database();
