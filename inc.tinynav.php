@@ -4,7 +4,7 @@ if($_SESSION['loggedin'] !== true){
     exit();
 }
 
-include_once './classes/db.php';
+include_once './classes/Db.php';
 $db = new Database();
 $conn = $db->connect();
 
