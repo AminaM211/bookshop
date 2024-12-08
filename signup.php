@@ -1,7 +1,9 @@
 <?php
     $name = isset($_SESSION['name']) ? $_SESSION['name'] : null;
 
-    include_once __DIR__ . './classes/Db.php';
+    include_once './classes/db.php';
+    
+    // Maak databaseverbinding
     $db = new Database();
     $conn = $db->connect();
     
