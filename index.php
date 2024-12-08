@@ -6,7 +6,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 }
 
 include 'cartpopup.php';
-include_once './classes/db.php';
+include_once './classes/Db.php';
 include './classes/Book.php';
 
 // Maak databaseverbinding
