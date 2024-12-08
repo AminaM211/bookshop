@@ -6,8 +6,8 @@ if ($_SESSION['loggedin'] !== true) {
 }
 
 include_once './classes/Db.php';
-include './classes/user.php';
-include './classes/Book.php';
+include_once './classes/user.php';
+include_once './classes/Book.php';
 
 // Create a database connection
 $db = new Database();
