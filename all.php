@@ -51,11 +51,12 @@ $conn->close();
 
         <div class="filters">
             <form method="GET" action="all.php" id="filterForm">
+            <input type="hidden" name="genre" value="<?php echo $genreFilter; ?>">
                 <select name="type" id="type" onchange="document.getElementById('filterForm').submit();">
                     <option value="all" <?php echo ($typeFilter === 'all') ? 'selected' : ''; ?>>All</option>
                     <option value="hardcover" <?php echo ($typeFilter === 'hardcover') ? 'selected' : ''; ?>>Hardcover</option>
                     <option value="paperback" <?php echo ($typeFilter === 'paperback') ? 'selected' : ''; ?>>Paperback</option>
-                    <option value="box set" <?php echo ($typeFilter === 'boxset') ? 'selected' : ''; ?>>Boxset</option>
+                    <option value="Box Set" <?php echo ($typeFilter === 'Box Set') ? 'selected' : ''; ?>>Box Set</option>
                 </select>
             </form>
         </div>
