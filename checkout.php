@@ -5,9 +5,9 @@ if ($_SESSION['loggedin'] !== true) {
     exit();
 }
 
-include_once './classes/db.php';
+include_once './classes/Db.php';
 include './classes/user.php';
-include './classes/book.php';
+include './classes/Book.php';
 
 // Create a database connection
 $db = new Database();

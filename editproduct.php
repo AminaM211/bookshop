@@ -5,7 +5,7 @@ if ($_SESSION['loggedin'] !== true) {
     exit();
 }
 
-include_once './classes/db.php';
+include_once './classes/Db.php';
 include 'inc.nav.php';
 include_once './classes/Products.php';
 // include './classes/user.php';

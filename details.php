@@ -5,7 +5,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit();
 }
 
-include_once './classes/db.php';
+include_once './classes/Db.php';
 include 'cartpopup.php';
 include './classes/Admin.php';
 include './classes/Book.php';

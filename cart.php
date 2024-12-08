@@ -6,7 +6,7 @@ if ($_SESSION['loggedin'] !== true) {
 }
 
 include_once 'inc.nav.php';
-include_once './classes/db.php';
+include_once './classes/Db.php';
 include_once './classes/user.php';
 include './classes/Cartbooks.php';
 

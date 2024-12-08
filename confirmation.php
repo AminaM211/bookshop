@@ -6,7 +6,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 }
 
 include 'inc.tinynav.php';
-include_once './classes/db.php';
+include_once './classes/Db.php';
 include './classes/user.php';
 include './classes/Order.php';
 

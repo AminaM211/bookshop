@@ -1,13 +1,11 @@
 <?php
 session_start();
 
-// Controleer of de gebruiker is ingelogd
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'error' => 'You must be logged in.']);
     exit;
 }
 
-// Ontvang de JSON-input
 $data = json_decode(file_get_contents('php://input'), true);
 $book_id = $data['book_id'] ?? null;
 
@@ -16,7 +14,6 @@ if (!$book_id) {
     exit;
 }
 
-// Databaseverbinding
 $conn = new mysqli('junction.proxy.rlwy.net', 'root', 'JoTRKOPYmfOIxHylrywjlCkBrYGpOWvB', 'railway', 11795);
 
 if ($conn->connect_error) {
@@ -26,14 +23,6 @@ if ($conn->connect_error) {
 
 $user_id = $_SESSION['user_id'];
 
-// $stmt = $conn->prepare("INSERT INTO cart (user_id, book_id) VALUES (?, ?)");
-// $stmt->bind_param("ii", $user_id, $book_id);
-
-// if ($stmt->execute()) {
-//     echo json_encode(['success' => true]);
-// } else {
-//     echo json_encode(['success' => false, 'error' => 'Failed to add to cart.']);
-// }
 
 $sql = "SELECT quantity FROM cart WHERE user_id = ? AND book_id = ?";
 $stmt = $conn->prepare($sql);
@@ -56,7 +45,6 @@ if ($result->num_rows > 0) {
     }
     $updateStmt->close();
 } else {
-    // Boek zit nog niet in de cart, voeg nieuw record toe
     $insertSql = "INSERT INTO cart (user_id, book_id, quantity) VALUES (?, ?, 1)";
     $insertStmt = $conn->prepare($insertSql);
     $insertStmt->bind_param("ii", $user_id, $book_id);
