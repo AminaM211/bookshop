@@ -28,6 +28,7 @@ $conn->close();
     <title>nav</title>
     <link rel="stylesheet" href="./css/normalize.css">
     <link rel="stylesheet" href="./css/inc.nav.css">
+    <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
 </head>
 <body>
     <div class="navbar">

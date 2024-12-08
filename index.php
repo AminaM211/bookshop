@@ -35,6 +35,7 @@ $conn->close();
     <title>Home - Online bookstore</title>
     <link rel="stylesheet" href="css/home.css">
     <link rel="stylesheet" href="./css/inc.footer.css">
+    <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
 </head>
 <body>
     <?php include 'inc.nav.php'; ?>
