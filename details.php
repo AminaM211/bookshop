@@ -332,8 +332,8 @@ $conn->close();
             let newScore = document.createElement('p');
             newScore.id = 'reviewscore';
             newScore.innerHTML = 
-                '<img src="./images/star.svg" alt="star" style="width: 20px;">'.repeat(result.score) + 
-                '<img src="./images/greystar.svg" alt="star" style="width: 20px; padding-left: 2px;">'.repeat(5 - result.score);
+                '<img src="./images/star.svg" alt="star" style="width: 15px;">'.repeat(result.score) + 
+                '<img src="./images/greystar.svg" alt="star" style="width: 15px; padding-left: 2px;">'.repeat(5 - result.score);
             reviewFlex.appendChild(newScore);
 
             let newTitle = document.createElement('p');
