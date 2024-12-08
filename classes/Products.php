@@ -3,6 +3,7 @@
 include_once("Db.php");
 
 class Product {
+    // private $conn;
     private $title;
     private $author_id;
     private $price;
@@ -16,6 +17,11 @@ class Product {
     private $detailed_description;
     private $subgenre;
     
+
+    // public function __construct($conn) {
+    //     $this->conn = $conn;
+    // }
+
     /**
      * Get the value of title
      */ 
@@ -289,34 +295,48 @@ class Product {
         return $this;
     }
 
-    public function save($author_id)
-    {
-        $conn = $db->connect();
-        $statement = $conn->prepare("INSERT INTO books (title, author_id, stock, type, subgenre, price, isbn, image_url, description, published_date, category_id, detailed_description) 
-                                    VALUES (:title, :author_id, :stock,  :type, :subgenre, :price, :isbn, :image_url, :description, :published_date, :category_id, :detailed_description)");
+   public function save($author_id, $db) {
+    $conn = $db->connect();
+    $sql = "INSERT INTO books (
+                title, 
+                author_id, 
+                stock, 
+                type, 
+                subgenre, 
+                price, 
+                isbn, 
+                image_url, 
+                description, 
+                detailed_description,
+                category_id,
+                published_date
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        $statement->bindValue(":title", $this->getTitle());
-        $statement->bindValue(":author_id", $author_id);
-        $statement->bindValue(":stock", $this->getStock());
-        $statement->bindValue(":type", $this->getType());
-        $statement->bindValue(":subgenre", $this->getSubgenre());
-        $statement->bindValue(":price", $this->getPrice());
-        $statement->bindValue(":isbn", $this->getIsbn());
-        $statement->bindValue(":image_url", $this->getImage_url());
-        $statement->bindValue(":description", $this->getDescription());
-        $statement->bindValue(":published_date", $this->getPublished_date());
-        $statement->bindValue(":category_id", $this->getCategory_id());
-        $statement->bindValue(":detailed_description", $this->getDetailed_description());
+    $stmt = $conn->prepare($sql);
 
-        $statement->execute();
+    if (!$stmt) {
+        die("Fout bij het voorbereiden van de query: " . $conn->error);
     }
 
-    // public static function getAll()
-    // {
-    //     $conn = Db::getConnection();
-    //     $statement = $conn->query('SELECT * FROM products');
-    //     return $statement->fetchAll(PDO::FETCH_ASSOC);
-    // }
+    $stmt->bind_param(
+        'sisssdssssss',
+        $this->title,
+        $author_id,
+        $this->stock,
+        $this->Type,
+        $this->subgenre,
+        $this->price,
+        $this->isbn,
+        $this->image_url,
+        $this->description,
+        $this->detailed_description,
+        $this->category_id,
+        $this->published_date
+    );
+
+    $stmt->close();
+    $conn->close();
+}
 
 }
 

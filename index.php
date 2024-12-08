@@ -24,6 +24,7 @@ $bookObj = new Book($conn);
 $books = $bookObj->getBooksByGenre('romance', 6);
 
 
+
 $conn->close();
 ?>
 

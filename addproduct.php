@@ -6,7 +6,8 @@ if($_SESSION['loggedin'] !== true ){
 }
 
 include_once './classes/Db.php';
-include './classes/Admin.php';
+include_once './classes/Admin.php';
+include_once './classes/Products.php';
 
 // Maak databaseverbinding
 $db = new Database();
@@ -87,8 +88,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $price = (float)str_replace(',', '.', $_POST['price']);
         $stock = (int)$_POST['stock'];
         $subgenre = htmlspecialchars($_POST['subgenre']);
-        $type = ($_POST['type']); // from drop down menu
-        $image_URL = htmlspecialchars($_POST['image_URL']);
+        $Type = ($_POST['type']);
+        $image_url = htmlspecialchars($_POST['image_URL']);
         $description = htmlspecialchars($_POST['description']);
         $detailed_description = htmlspecialchars($_POST['detailed_description']);
         // $author_id = $_POST['author_id'];
@@ -110,17 +111,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $product->setPrice($price);
         $product->setStock($stock);
         $product->setISBN($ISBN);
-        $product->setImage_URL($image_URL);
+        $product->setImage_URL($image_url);
         $product->setSubgenre($subgenre);
         $product->setDescription($description);
         $product->setDetailed_description($detailed_description);
         $product->setPublished_date($published_date);
-        $product->setType($type);
+        $product->setType($Type);
 
-        $product->save($author_id);
+        $product->save($author_id, $db);
 
-
-        // $product->save();
 
         $success = true;
     } catch (Exception $e) {
@@ -165,7 +164,7 @@ $conn->close();
         <div class="form-container">
             <div class="form-group">
             <label for="title">Title:</label>
-            <input type="text" id="title" name="title" >
+            <input type="text" id="title" name="title" required>
             </div>
 
             <div class="author-container">
@@ -173,44 +172,44 @@ $conn->close();
             <div class="author">
                 <div class="form-group">
                     <label for="first_name"></label>
-                    <input placeholder="First name" type="text" id="first_name" name="first_name">
+                    <input placeholder="First name" type="text" id="first_name" name="first_name" required>
                 </div>
 
                 <div class="form-group">
                     <label for="last_name"></label>
-                    <input placeholder="Last name" type="text" id="last_name" name="last_name">
+                    <input placeholder="Last name" type="text" id="last_name" name="last_name" required>
                 </div>
             </div>
             </div>
 
             <div class="form-group">
             <label for="category_id">Category ID:</label>
-            <input type="number" id="category_id" name="category_id" placeholder= "1 = Fiction, 2 = NonFiction, 3 = Romance, 4 = Thriller " >
+            <input type="number" id="category_id" name="category_id" placeholder= "1 = Fiction, 2 = NonFiction, 3 = Romance, 4 = Thriller "  required>
             </div>
 
             <div class="form-group">
             <label for="published_date">Published Date:</label>
-            <input type="date" id="published_date" name="published_date" >
+            <input type="date" id="published_date" name="published_date"  required>
             </div>
 
             <div class="form-group">
             <label for="ISBN">ISBN:</label>
-            <input type="text" id="ISBN" name="ISBN" >
+            <input type="text" id="ISBN" name="ISBN"  required>
             </div>
 
             <div class="form-group">
             <label for="price">Price:</label>
-            <input type="text" id="price" name="price" step="0.01" >
+            <input type="text" id="price" name="price" step="0.01"  required>
             </div>
 
             <div class="form-group">
             <label for="stock">Stock:</label>
-            <input type="number" id="stock" name="stock" >
+            <input type="number" id="stock" name="stock"  required>
             </div>
 
             <div class="form-group">
             <label for="subgenre">Subgenre:</label>
-            <input type="text" id="subgenre" name="subgenre" >
+            <input type="text" id="subgenre" name="subgenre"  required>
             </div>
 
             <!-- drop down menu for type: paperback, hardcover or boxset -->
