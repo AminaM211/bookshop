@@ -120,10 +120,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         $product->save($author_id, $db);
 
-
         $success = true;
     } catch (Exception $e) {
-        echo "Fout: " . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
+        echo "Fout: " . $e->getMessage();
     }
 }
 $conn->close();

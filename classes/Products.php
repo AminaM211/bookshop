@@ -295,48 +295,54 @@ class Product {
         return $this;
     }
 
-   public function save($author_id, $db) {
-    $conn = $db->connect();
-    $sql = "INSERT INTO books (
-                title, 
-                author_id, 
-                stock, 
-                type, 
-                subgenre, 
-                price, 
-                isbn, 
-                image_url, 
-                description, 
-                detailed_description,
-                category_id,
-                published_date
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-    $stmt = $conn->prepare($sql);
-
-    if (!$stmt) {
-        die("Fout bij het voorbereiden van de query: " . $conn->error);
+    public function save($author_id, $db) {
+        $conn = $db->connect();
+        $sql = "INSERT INTO books (
+                    title, 
+                    author_id, 
+                    stock, 
+                    type, 
+                    subgenre, 
+                    price, 
+                    isbn, 
+                    image_url, 
+                    description, 
+                    detailed_description,
+                    category_id,
+                    published_date
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    
+        $stmt = $conn->prepare($sql);
+    
+        if (!$stmt) {
+            throw new Exception("Error preparing the query: " . $conn->error);
+        }
+    
+        $stmt->bind_param(
+            'sisssdssssss',
+            $this->title,
+            $author_id,
+            $this->stock,
+            $this->Type,
+            $this->subgenre,
+            $this->price,
+            $this->isbn,
+            $this->image_url,
+            $this->description,
+            $this->detailed_description,
+            $this->category_id,
+            $this->published_date
+        );
+    
+        if ($stmt->execute()) {
+            $stmt->close();
+            $conn->close();
+            return true; // Successfully saved
+        } else {
+            throw new Exception("Error executing the query: " . $stmt->error);
+        }
     }
-
-    $stmt->bind_param(
-        'sisssdssssss',
-        $this->title,
-        $author_id,
-        $this->stock,
-        $this->Type,
-        $this->subgenre,
-        $this->price,
-        $this->isbn,
-        $this->image_url,
-        $this->description,
-        $this->detailed_description,
-        $this->category_id,
-        $this->published_date
-    );
-
-    $stmt->close();
-    $conn->close();
-}
+    
 
 }
 
