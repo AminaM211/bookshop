@@ -89,7 +89,6 @@ $conn->close();
                             <div class="type"><?php echo $book['Type']; ?> | <?php echo $book['subgenre']; ?></div>
                             <div class="description text">
                                 <?php echo $book['description']; ?>
-                                <a href="#" class="leesmeer">Lees meer</a>
                             </div>
                         </div>
                         <div class="secondflex">
