@@ -165,7 +165,7 @@ $conn->close();
         <div class="form-container">
             <div class="form-group">
             <label for="title">Title:</label>
-            <input type="text" id="title" name="title" required>
+            <input type="text" id="title" name="title" >
             </div>
 
             <div class="author-container">
@@ -185,32 +185,32 @@ $conn->close();
 
             <div class="form-group">
             <label for="category_id">Category ID:</label>
-            <input type="number" id="category_id" name="category_id" placeholder= "1 = Fiction, 2 = NonFiction, 3 = Romance, 4 = Thriller " required>
+            <input type="number" id="category_id" name="category_id" placeholder= "1 = Fiction, 2 = NonFiction, 3 = Romance, 4 = Thriller " >
             </div>
 
             <div class="form-group">
             <label for="published_date">Published Date:</label>
-            <input type="date" id="published_date" name="published_date" required>
+            <input type="date" id="published_date" name="published_date" >
             </div>
 
             <div class="form-group">
             <label for="ISBN">ISBN:</label>
-            <input type="text" id="ISBN" name="ISBN" required>
+            <input type="text" id="ISBN" name="ISBN" >
             </div>
 
             <div class="form-group">
             <label for="price">Price:</label>
-            <input type="text" id="price" name="price" step="0.01" required>
+            <input type="text" id="price" name="price" step="0.01" >
             </div>
 
             <div class="form-group">
             <label for="stock">Stock:</label>
-            <input type="number" id="stock" name="stock" required>
+            <input type="number" id="stock" name="stock" >
             </div>
 
             <div class="form-group">
             <label for="subgenre">Subgenre:</label>
-            <input type="text" id="subgenre" name="subgenre" required>
+            <input type="text" id="subgenre" name="subgenre" >
             </div>
 
             <!-- drop down menu for type: paperback, hardcover or boxset -->
@@ -225,17 +225,17 @@ $conn->close();
 
             <div class="form-group">
             <label for="image_URL">Image URL:</label>
-            <input type="text" id="image_URL" name="image_URL" required>
+            <input type="text" id="image_URL" name="image_URL" >
             </div>
 
             <div class="form-group">
                 <label for="description">Description:</label>
-                <textarea type="text" id="description" name="description" required></textarea>
+                <textarea type="text" id="description" name="description" ></textarea>
             </div>
 
             <div class="form-group">
                 <label for="detailed_description">Detailed Description:</label>
-                <textarea type="text" id="detailed_description" name="detailed_description" required></textarea>
+                <textarea type="text" id="detailed_description" name="detailed_description" ></textarea>
             </div>
 
             <button class="add" type="submit">Add Product</button>
