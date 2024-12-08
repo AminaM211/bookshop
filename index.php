@@ -103,21 +103,7 @@ $conn->close();
     </div>
     </div>
 </div>
-
-    <section class="newsletter">
-        <div class="newsletter-content">
-            <h2>Subscribe to our Newsletter</h2>
-            <p>Get the latest updates on new books and upcoming sales</p>
-            <form action="subscribe.php" method="post">
-                <input type="email" name="email" placeholder="Enter your email" required>
-                <button type="submit">Subscribe</button>
-            </form>
-        </div>
-    </section>
-
-
     <?php include 'inc.footer.php'; ?>
-
     <script src="./js/index.js"></script>
     <script src="./js/cart.js"></script>
 </body>
