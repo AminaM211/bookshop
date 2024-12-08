@@ -34,8 +34,8 @@ if (!empty($_POST)) {
         'message' => 'Review submitted successfully.',
         'body' => htmlspecialchars_decode($r->getComment()),
         'title' => htmlspecialchars_decode($r->getTitle()),
-        'name' => htmlspecialchars($_SESSION['name']),
-        'score' => htmlspecialchars_decode($r->getScore())
+        'name' => $_SESSION['name'],
+        'score' => $r->getScore()
     ];
 
     header ('Content-Type: application/json');
