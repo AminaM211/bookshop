@@ -6,8 +6,8 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 }
 
 include_once '../classes/Db.php';
-include '../classes/Review.php'; 
-include '../classes/User.php';
+include_once '../classes/Review.php'; 
+include_once '../classes/user.php';
 
 // Maak databaseverbinding
 $db = new Database();
