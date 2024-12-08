@@ -1,7 +1,7 @@
 <?php
     $name = isset($_SESSION['name']) ? $_SESSION['name'] : null;
 
-    include_once './classes/db.php';
+    include_once __DIR__ . '/classes/db.php';
     $db = new Database();
     $conn = $db->connect();
     
