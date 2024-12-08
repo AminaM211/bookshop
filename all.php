@@ -50,9 +50,9 @@ $conn->close();
         </div>
 
         <div class="filters">
-            <form method="GET" action="all.php">
+            <form method="GET" action="all.php" id="filterForm">
                 <!-- <label class="filter-title" for="type"></label> -->
-                <select name="type" id="type">
+                <select name="type" id="type" onchange="document.getElementById('filterForm').submit();">
                     <option value="all" <?php echo ($typeFilter === 'all') ? 'selected' : ''; ?>>All</option>
                     <option value="hardcover" <?php echo ($typeFilter === 'hardcover') ? 'selected' : ''; ?>>Hardcover</option>
                     <option value="paperback" <?php echo ($typeFilter === 'paperback') ? 'selected' : ''; ?>>Paperback</option>
